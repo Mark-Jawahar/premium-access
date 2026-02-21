@@ -1,45 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Secure Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Access</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body onload="guardPage('login')">
+  <div class="glass-card">
+    <h1>Secure Login</h1>
+    <p class="subtitle">Enter your mobile number to access the portal.</p>
 
-<div class="card animate-in">
-  <h1>Secure Login</h1>
-  <p class="subtitle">OTP verification</p>
+    <div id="step-1">
+      <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10">
+      <button class="btn-gold" onclick="handleSendOTP()">Get Access Code</button>
+    </div>
 
-  <input id="phone" placeholder="10-digit mobile number" maxlength="10">
-  <button class="btn-gold" onclick="requestOTP()">Send OTP</button>
+    <div id="step-2" style="display: none;">
+      <input type="number" id="otp" placeholder="Enter 6-digit OTP">
+      <button class="btn-gold" onclick="handleVerifyOTP()">Verify & Enter</button>
+    </div>
 
-  <input id="otp" placeholder="Enter OTP" class="fade" />
-  <button id="verifyBtn" class="btn-gold fade" onclick="confirmOTP()">Verify</button>
+    <div id="recaptcha-container"></div>
+  </div>
 
-  <div id="recaptcha"></div>
-</div>
+  <script src="core.js"></script>
+  <script type="module" src="firebase-config.js"></script>
+  <script>
+    let confirmationResult;
 
-<script type="module" src="firebase.js"></script>
-<script>
-async function requestOTP() {
-  const num = phone.value.trim();
-  if (!/^[6-9]\d{9}$/.test(num)) return alert("Invalid number");
+    async function handleSendOTP() {
+      const phone = document.getElementById('phone').value;
+      if(phone.length !== 10) return alert('Enter a valid 10-digit number');
+      
+      const fullPhone = "+91" + phone;
+      document.querySelector('.btn-gold').innerText = "Sending...";
+      
+      try {
+        confirmationResult = await window.sendOTP(fullPhone);
+        document.getElementById('step-1').style.display = 'none';
+        document.getElementById('step-2').style.display = 'block';
+      } catch (error) {
+        alert("Error: " + error.message);
+        document.querySelector('.btn-gold').innerText = "Get Access Code";
+      }
+    }
 
-  const ok = await sendOTP("+91" + num);
-  if (ok) {
-    otp.classList.add("show");
-    verifyBtn.classList.add("show");
-  }
-}
-
-async function confirmOTP() {
-  const user = await verifyOTP(otp.value.trim());
-  if (user) {
-    localStorage.setItem("user", user.phoneNumber);
-    location.href = "choice.html";
-  }
-}
-</script>
-
+    async function handleVerifyOTP() {
+      const otp = document.getElementById('otp').value;
+      try {
+        const result = await confirmationResult.confirm(otp);
+        store.set('user', { phone: result.user.phoneNumber });
+        logActivity({ type: "Login", phone: result.user.phoneNumber });
+        window.location.href = 'choice.html';
+      } catch (error) {
+        alert("Invalid OTP");
+      }
+    }
+  </script>
 </body>
 </html>
