@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Select Access</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body onload="guard('choice')">
 
+<div class="card">
+  <h1>Select Access</h1>
+  <p class="subtitle">Choose your experience</p>
+
+  <div class="list-container">
+    <div class="item-card" onclick="nav('free.html')">
+      <div class="item-info">
+        <h3>Free Preview</h3>
+        <p>Limited videos</p>
+      </div>
+      <div class="price-tag">Free</div>
+    </div>
+
+    <div class="item-card premium" onclick="nav('exclusive.html')">
+      <span class="badge">Recommended</span>
+      <div class="item-info">
+        <h3>Premium Access</h3>
+        <p>Unlock full content</p>
+      </div>
+      <div class="price-tag">👑</div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
