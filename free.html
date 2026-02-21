@@ -1,28 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Free Previews</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Teasers</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body onload="guard('free')">
+<body onload="guardPage('free')">
+  <div class="glass-card">
+    <h1>Free Teasers</h1>
+    <p class="subtitle">A small glimpse of what awaits.</p>
 
-<div class="card">
-  <h1>Free Previews</h1>
-
-  <div class="list-container">
-    <div class="item-card" onclick="openFree('Preview 1','https://example.com')">
-      <div class="item-info">
-        <h3>Teaser Video 1</h3>
-        <p>HD Preview</p>
-      </div>
-      <div class="price-tag">▶</div>
+    <div class="plan-list" style="margin-bottom: 24px;">
+      <a href="YOUR_LINK_HERE" target="_blank" class="plan-item" style="text-decoration: none;">
+        <div class="plan-info">
+          <div class="plan-title">Teaser Clip 01</div>
+          <div class="plan-desc">1:45 mins</div>
+        </div>
+        <div class="plan-price">▶</div>
+      </a>
     </div>
+
+    <button class="btn-gold" onclick="window.location.href='exclusive.html'">Unlock Full Videos</button>
+    <button class="btn-ghost" onclick="window.location.href='choice.html'">Back</button>
   </div>
-
-  <button class="btn-gold" onclick="nav('exclusive.html')">Unlock Premium</button>
-</div>
-
-<script src="script.js"></script>
+  <script src="core.js"></script>
 </body>
 </html>
