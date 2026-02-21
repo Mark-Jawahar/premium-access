@@ -1,27 +1,66 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithPhoneNumber, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+// firebase.js (FINAL, WORKING)
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getAuth,
+  signInWithPhoneNumber,
+  RecaptchaVerifier
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+/* ================= FIREBASE CONFIG ================= */
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_ID",
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID"
 };
 
+/* ================= INIT ================= */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+auth.languageCode = "en";
 
-window.sendOtp = () => {
-  window.recaptcha = new RecaptchaVerifier(auth,"recaptcha",{size:"invisible"});
-  const phone="+91"+phone.value;
-  signInWithPhoneNumber(auth,phone,recaptcha).then(c=>{
-    window.confirmation=c;
-    otp.style.display=verifyBtn.style.display="block"
-  })
-}
+let confirmationResult;
 
-window.verifyOtp=()=>{
-  confirmation.confirm(otp.value).then(()=>{
-    localStorage.user=phone.value;
-    nav('choice.html')
-  })
-}
+/* ================= INIT RECAPTCHA ================= */
+window.initRecaptcha = () => {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha",
+      {
+        size: "invisible",
+        callback: () => {
+          console.log("reCAPTCHA solved");
+        }
+      }
+    );
+  }
+};
+
+/* ================= SEND OTP ================= */
+window.sendOTP = async (phone) => {
+  try {
+    initRecaptcha();
+    confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phone,
+      window.recaptchaVerifier
+    );
+    return true;
+  } catch (e) {
+    alert(e.message);
+    return false;
+  }
+};
+
+/* ================= VERIFY OTP ================= */
+window.verifyOTP = async (otp) => {
+  try {
+    const res = await confirmationResult.confirm(otp);
+    return res.user;
+  } catch {
+    alert("Invalid OTP");
+    return null;
+  }
+};
