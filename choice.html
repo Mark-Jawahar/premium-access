@@ -1,36 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Select Access</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body onload="guard('choice')">
+<body onload="guardPage('choice')">
+  <div class="glass-card">
+    <h1>Choose Access</h1>
+    <p class="subtitle">Select how you want to proceed.</p>
 
-<div class="card">
-  <h1>Select Access</h1>
-  <p class="subtitle">Choose your experience</p>
-
-  <div class="list-container">
-    <div class="item-card" onclick="nav('free.html')">
-      <div class="item-info">
-        <h3>Free Preview</h3>
-        <p>Limited videos</p>
+    <div class="plan-list">
+      <div class="plan-item" onclick="window.location.href='free.html'">
+        <div class="plan-info">
+          <div class="plan-title">Guest Pass</div>
+          <div class="plan-desc">Watch limited teaser clips</div>
+        </div>
+        <div class="plan-price" style="color:var(--text-main)">Free</div>
       </div>
-      <div class="price-tag">Free</div>
-    </div>
 
-    <div class="item-card premium" onclick="nav('exclusive.html')">
-      <span class="badge">Recommended</span>
-      <div class="item-info">
-        <h3>Premium Access</h3>
-        <p>Unlock full content</p>
+      <div class="plan-item premium-glow" onclick="window.location.href='exclusive.html'">
+        <div class="badge">RECOMMENDED</div>
+        <div class="plan-info">
+          <div class="plan-title">VIP Premium</div>
+          <div class="plan-desc">Unlock full private library</div>
+        </div>
+        <div class="plan-price">👑</div>
       </div>
-      <div class="price-tag">👑</div>
     </div>
   </div>
-</div>
 
-<script src="script.js"></script>
+  <script src="core.js"></script>
 </body>
 </html>
