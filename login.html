@@ -1,1 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>OTP Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<div class="card">
+  <h1>Secure Login</h1>
+  <p class="subtitle">Verify your mobile number</p>
+
+  <input id="phone" placeholder="10-digit Mobile Number" maxlength="10">
+  <button class="btn-gold" onclick="sendOtp()">Send OTP</button>
+
+  <input id="otp" placeholder="Enter OTP" style="display:none">
+  <button id="verifyBtn" class="btn-gold" style="display:none" onclick="verifyOtp()">Verify</button>
+
+  <div id="recaptcha"></div>
+</div>
+
+<script type="module" src="firebase.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
