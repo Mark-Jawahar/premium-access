@@ -1,1 +1,28 @@
-
+body {
+  background: radial-gradient(circle,#111,#000);
+  font-family: -apple-system, BlinkMacSystemFont;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;color:#fff
+}
+.card {
+  width:100%;max-width:420px;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(20px);
+  border-radius:26px;
+  padding:30px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.2)
+}
+.btn-gold {
+  background:linear-gradient(135deg,#ffd166,#c9a227);
+  border:none;padding:16px;
+  width:100%;border-radius:14px;
+  font-weight:700;cursor:pointer
+}
+.subtitle {color:#aaa;font-size:13px;margin:10px 0}
+.item-card {
+  padding:16px;border-radius:14px;
+  background:rgba(0,0,0,.4);
+  margin-bottom:12px;cursor:pointer
+}
+.premium {border:1px solid gold}
