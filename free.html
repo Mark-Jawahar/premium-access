@@ -1,1 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Free Previews</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body onload="guard('free')">
 
+<div class="card">
+  <h1>Free Previews</h1>
+
+  <div class="list-container">
+    <div class="item-card" onclick="openFree('Preview 1','https://example.com')">
+      <div class="item-info">
+        <h3>Teaser Video 1</h3>
+        <p>HD Preview</p>
+      </div>
+      <div class="price-tag">▶</div>
+    </div>
+  </div>
+
+  <button class="btn-gold" onclick="nav('exclusive.html')">Unlock Premium</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
