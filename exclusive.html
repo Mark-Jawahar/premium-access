@@ -1,1 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Premium Plans</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body onload="guard('exclusive');startTimer()">
 
+<div class="card">
+  <h1>Premium Access</h1>
+  <p id="hook" class="subtitle"></p>
+  <p id="timer" class="subtitle"></p>
+
+  <div class="list-container">
+    <div class="item-card" onclick="pay('starter',49)">₹49 – Starter</div>
+    <div class="item-card" onclick="pay('essential',99)">₹99 – Essential</div>
+    <div class="item-card" onclick="pay('popular',199)">₹199 – Popular</div>
+    <div class="item-card premium" onclick="pay('limited',299)">🔥 ₹299 – Limited Offer</div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
