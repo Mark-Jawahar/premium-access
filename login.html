@@ -1,26 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>OTP Login</title>
+  <title>Secure Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="card">
+<div class="card animate-in">
   <h1>Secure Login</h1>
-  <p class="subtitle">Verify your mobile number</p>
+  <p class="subtitle">OTP verification</p>
 
-  <input id="phone" placeholder="10-digit Mobile Number" maxlength="10">
-  <button class="btn-gold" onclick="sendOtp()">Send OTP</button>
+  <input id="phone" placeholder="10-digit mobile number" maxlength="10">
+  <button class="btn-gold" onclick="requestOTP()">Send OTP</button>
 
-  <input id="otp" placeholder="Enter OTP" style="display:none">
-  <button id="verifyBtn" class="btn-gold" style="display:none" onclick="verifyOtp()">Verify</button>
+  <input id="otp" placeholder="Enter OTP" class="fade" />
+  <button id="verifyBtn" class="btn-gold fade" onclick="confirmOTP()">Verify</button>
 
   <div id="recaptcha"></div>
 </div>
 
 <script type="module" src="firebase.js"></script>
-<script src="script.js"></script>
+<script>
+async function requestOTP() {
+  const num = phone.value.trim();
+  if (!/^[6-9]\d{9}$/.test(num)) return alert("Invalid number");
+
+  const ok = await sendOTP("+91" + num);
+  if (ok) {
+    otp.classList.add("show");
+    verifyBtn.classList.add("show");
+  }
+}
+
+async function confirmOTP() {
+  const user = await verifyOTP(otp.value.trim());
+  if (user) {
+    localStorage.setItem("user", user.phoneNumber);
+    location.href = "choice.html";
+  }
+}
+</script>
+
 </body>
 </html>
