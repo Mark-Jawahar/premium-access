@@ -1,26 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Premium Plans</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exclusive Access</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
-<body onload="guard('exclusive');startTimer()">
+<body onload="guardPage('exclusive')">
+  <div class="glass-card">
+    <h1>Unlock Everything</h1>
+    <p class="subtitle">Choose your plan and get instant access.</p>
 
-<div class="card">
-  <h1>Premium Access</h1>
-  <p id="hook" class="subtitle"></p>
-  <p id="timer" class="subtitle"></p>
+    <div class="urgency-bar">
+      ⏳ Limited Offer expires in: <span id="timer">14:59</span>
+    </div>
 
-  <div class="list-container">
-    <div class="item-card" onclick="pay('starter',49)">₹49 – Starter</div>
-    <div class="item-card" onclick="pay('essential',99)">₹99 – Essential</div>
-    <div class="item-card" onclick="pay('popular',199)">₹199 – Popular</div>
-    <div class="item-card premium" onclick="pay('limited',299)">🔥 ₹299 – Limited Offer</div>
+    <div class="plan-list">
+      <div class="plan-item" onclick="startPayment('Starter', 49)">
+        <div class="plan-info">
+          <div class="plan-title">Starter</div>
+          <div class="plan-desc">1 Premium Video</div>
+        </div>
+        <div class="plan-price">₹49</div>
+      </div>
+
+      <div class="plan-item" onclick="startPayment('Essential', 99)">
+        <div class="plan-info">
+          <div class="plan-title">Essential</div>
+          <div class="plan-desc">5 Premium Videos</div>
+        </div>
+        <div class="plan-price">₹99</div>
+      </div>
+
+      <div class="plan-item" onclick="startPayment('Popular', 199)">
+        <div class="plan-info">
+          <div class="plan-title">Popular</div>
+          <div class="plan-desc">10 Premium Videos</div>
+        </div>
+        <div class="plan-price">₹199</div>
+      </div>
+
+      <div class="plan-item premium-glow" onclick="startPayment('VIP Lifetime', 299)">
+        <div class="badge">FLASH SALE</div>
+        <div class="plan-info">
+          <div class="plan-title">VIP Lifetime</div>
+          <div class="plan-desc">50+ Videos (Full Library)</div>
+        </div>
+        <div class="plan-price"><span class="strike">₹499</span> ₹299</div>
+      </div>
+    </div>
+
+    <div class="social-proof">
+      <span style="color: #34c759;">●</span> 
+      <b id="live-count">1,247</b> members unlocked premium today
+    </div>
+
+    <button class="btn-ghost" onclick="window.location.href='choice.html'">Back</button>
   </div>
-</div>
 
-<script src="script.js"></script>
+  <script src="core.js"></script>
+  <script>
+    // Timer Logic
+    let time = 899; // 15 mins
+    setInterval(() => {
+      const min = Math.floor(time / 60);
+      let sec = time % 60;
+      sec = sec < 10 ? '0' + sec : sec;
+      document.getElementById('timer').innerText = `${min}:${sec}`;
+      if(time > 0) time--;
+    }, 1000);
+
+    // Randomize Social Proof Hook slightly to look alive
+    let baseCount = 1247;
+    setInterval(() => {
+      if(Math.random() > 0.7) {
+        baseCount += Math.floor(Math.random() * 3);
+        document.getElementById('live-count').innerText = baseCount.toLocaleString();
+      }
+    }, 5000);
+  </script>
 </body>
 </html>
