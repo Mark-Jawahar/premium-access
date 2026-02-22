@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
+<body onload="guardPage('age')">
 
   <div class="card">
     <div style="font-size:48px; margin-bottom:14px;">🔞</div>
@@ -43,20 +43,16 @@
     function confirmAge(isAdult) {
       if (isAdult) {
         store.set("age_verified", true);
-        window.location.replace("login.html");
+
+        // Prevent back navigation only AFTER confirmation
+        history.replaceState(null, null, location.href);
+
+        window.location.href = "login.html";
       } else {
         // Hard exit for compliance
-        window.location.replace("https://www.google.com");
+        window.location.href = "https://www.google.com";
       }
     }
-
-    /* ===============================
-       BLOCK BACK NAVIGATION
-    ================================ */
-    history.pushState(null, null, location.href);
-    window.onpopstate = function () {
-      history.go(1);
-    };
   </script>
 
 </body>
