@@ -1,10 +1,11 @@
-/* =====================================================
-   CORE.JS — CENTRAL BRAIN (AUTH • ACCESS • STATE)
-   Premium / iOS-style / Zero framework
+/* ======================================================
+   CORE.JS — CENTRAL BRAIN
+   Auth • Access • State • Payments
+   Premium / iOS-style / No framework
 ===================================================== */
 
 /* -------------------------
-   SIMPLE STORAGE WRAPPER
+   SAFE STORAGE WRAPPER
 ------------------------- */
 const store = {
   set(key, value) {
@@ -12,7 +13,11 @@ const store = {
   },
   get(key) {
     const val = localStorage.getItem(key);
-    return val ? JSON.parse(val) : null;
+    try {
+      return val ? JSON.parse(val) : null;
+    } catch {
+      return null;
+    }
   },
   remove(key) {
     localStorage.removeItem(key);
@@ -23,38 +28,46 @@ const store = {
 };
 
 /* -------------------------
+   AUTH HELPERS
+------------------------- */
+function isLoggedIn() {
+  return !!store.get("user_email");
+}
+
+function isPaid() {
+  return !!store.get("paid_user");
+}
+
+/* -------------------------
    PAGE ACCESS GUARD
 ------------------------- */
 function guardPage(page) {
   const ageVerified = store.get("age_verified");
-  const loggedIn = store.get("logged_in");
-  const paid = store.get("paid_user");
+  const loggedIn = isLoggedIn();
+  const paid = isPaid();
 
-  // AGE GATE
+  /* AGE GATE — ABSOLUTE */
   if (!ageVerified && page !== "age") {
     window.location.href = "age.html";
     return;
   }
 
-  // LOGIN REQUIRED
-  if (
-    ageVerified &&
-    !loggedIn &&
-    !["age", "login"].includes(page)
-  ) {
+  /* LOGIN REQUIRED */
+  const loginRequiredPages = [
+    "choice",
+    "free",
+    "exclusive",
+    "thankyou"
+  ];
+
+  if (loginRequiredPages.includes(page) && !loggedIn) {
     window.location.href = "login.html";
     return;
   }
 
-  // PAYMENT REQUIRED
-  if (page === "exclusive" && !paid) {
-    window.location.href = "choice.html";
-    return;
-  }
-
-  // THANK YOU PAGE ONLY AFTER PAYMENT
+  /* PAID-ONLY PAGE */
   if (page === "thankyou" && !paid) {
-    window.location.href = "choice.html";
+    window.location.href = "exclusive.html";
     return;
   }
 }
@@ -62,9 +75,8 @@ function guardPage(page) {
 /* -------------------------
    LOGIN STATE
 ------------------------- */
-function setLoggedIn(userData = {}) {
-  store.set("logged_in", true);
-  store.set("user", userData);
+function setLoggedIn(email) {
+  store.set("user_email", email);
 }
 
 /* -------------------------
@@ -72,11 +84,14 @@ function setLoggedIn(userData = {}) {
 ------------------------- */
 function setPaid(paymentData) {
   store.set("paid_user", true);
-  store.set("last_payment", paymentData);
+  store.set("last_payment", {
+    ...paymentData,
+    time: Date.now()
+  });
 }
 
 /* -------------------------
-   LOGOUT (OPTIONAL)
+   LOGOUT
 ------------------------- */
 function logout() {
   store.clear();
@@ -84,9 +99,14 @@ function logout() {
 }
 
 /* -------------------------
-   RAZORPAY STARTER
+   RAZORPAY PAYMENT
 ------------------------- */
 function startPayment(plan, amount) {
+  if (typeof Razorpay === "undefined") {
+    alert("Payment system not loaded");
+    return;
+  }
+
   const options = {
     key: "YOUR_RAZORPAY_KEY",
     amount: amount * 100,
@@ -94,12 +114,23 @@ function startPayment(plan, amount) {
     name: "Premium Access",
     description: plan,
     handler: function (response) {
+      if (!response.razorpay_payment_id) {
+        alert("Payment verification failed");
+        return;
+      }
+
       setPaid({
         plan,
         amount,
         payment_id: response.razorpay_payment_id
       });
+
       window.location.href = "thankyou.html";
+    },
+    modal: {
+      ondismiss: function () {
+        console.log("Payment popup closed");
+      }
     },
     theme: {
       color: "#bf953f"
@@ -109,3 +140,9 @@ function startPayment(plan, amount) {
   const rzp = new Razorpay(options);
   rzp.open();
 }
+
+/* -------------------------
+   DEBUG (OPTIONAL)
+------------------------- */
+window.store = store;
+window.logout = logout;
