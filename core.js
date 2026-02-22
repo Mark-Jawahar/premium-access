@@ -1,5 +1,5 @@
 /* ======================================================
-   core.js — CENTRAL LOGIC BRAIN (FIXED)
+   core.js — CENTRAL LOGIC BRAIN (FINAL, CLEAN)
    Purpose: Routing, Session, Guards, Payments
 ====================================================== */
 
@@ -11,18 +11,16 @@ const store = {
     localStorage.setItem(key, JSON.stringify(value));
   },
   get(key) {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
     try {
-      const v = localStorage.getItem(key);
-      return v ? JSON.parse(v) : null;
+      return JSON.parse(raw);
     } catch {
       return null;
     }
   },
   remove(key) {
     localStorage.removeItem(key);
-  },
-  clear() {
-    localStorage.clear();
   }
 };
 
@@ -31,10 +29,9 @@ const store = {
 ======================= */
 const SESSION_HOURS = 24;
 const SESSION_MS = SESSION_HOURS * 60 * 60 * 1000;
-const PAYMENT_VALID_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 /* =======================
-   AUTH HELPERS
+   SESSION HELPERS
 ======================= */
 function isLoggedIn() {
   const email = store.get("user_email");
@@ -43,79 +40,80 @@ function isLoggedIn() {
   if (!email || !time) return false;
 
   if (Date.now() - time > SESSION_MS) {
-    logout(true);
+    logout(false);
     return false;
   }
   return true;
 }
 
-function logout(expired = false) {
+function logout(redirect = true) {
   store.remove("user_email");
   store.remove("login_time");
   store.remove("access_level");
   store.remove("last_payment");
 
-  const ageOK = store.get("age_verified");
-  window.location.href = ageOK ? "login.html" : "age.html";
-}
-
-/* =======================
-   PAYMENT VALIDATION
-======================= */
-function hasValidPayment() {
-  const payment = store.get("last_payment");
-  if (!payment || !payment.time) return false;
-
-  if (Date.now() - payment.time > PAYMENT_VALID_MS) {
-    store.remove("last_payment");
-    store.set("access_level", "guest");
-    return false;
+  if (redirect) {
+    window.location.href = "login.html";
   }
-  return true;
 }
 
 /* =======================
-   ROUTE GUARD
+   ROUTE GUARD (SAFE)
 ======================= */
 function guardPage(page) {
   const ageOK = store.get("age_verified");
   const logged = isLoggedIn();
+  const payment = store.get("last_payment");
 
-  // AGE GATE (allow age + login pages)
-  if (!ageOK && !["age", "login"].includes(page)) {
+  // Allow public pages
+  if (page === "age" || page === "login") return;
+
+  // Age verification required
+  if (!ageOK) {
     window.location.href = "age.html";
     return;
   }
 
-  // LOGIN REQUIRED
-  if (["choice", "free", "exclusive", "thankyou"].includes(page)) {
-    if (!logged) {
-      window.location.href = "login.html";
-      return;
-    }
+  // Login required
+  if (!logged) {
+    window.location.href = "login.html";
+    return;
   }
 
-  // THANK YOU PAGE
-  if (page === "thankyou" && !hasValidPayment()) {
-    window.location.href = "exclusive.html";
-    return;
+  // Thank-you page protection
+  if (page === "thankyou") {
+    if (
+      !payment ||
+      !payment.time ||
+      Date.now() - payment.time > SESSION_MS
+    ) {
+      window.location.href = "exclusive.html";
+    }
   }
 }
 
 /* =======================
-   LOGIN SUCCESS
+   AUTH SUCCESS HANDLER
 ======================= */
 function onLoginSuccess(email) {
+  if (!email) return;
+
   store.set("user_email", email);
   store.set("login_time", Date.now());
   store.set("access_level", "guest");
+
   window.location.href = "choice.html";
 }
 
 /* =======================
-   PAYMENT (RAZORPAY)
+   PAYMENT HANDLER (RAZORPAY)
 ======================= */
 function startPayment(plan, amount) {
+  if (typeof Razorpay === "undefined") {
+    alert("Payment system failed to load. Please refresh.");
+    return;
+  }
+
   const options = {
     key: "YOUR_RAZORPAY_KEY",
     amount: amount * 100,
@@ -138,12 +136,11 @@ function startPayment(plan, amount) {
     theme: { color: "#bf953f" }
   };
 
-  const rzp = new Razorpay(options);
-  rzp.open();
+  new Razorpay(options).open();
 }
 
 /* =======================
-   GLOBAL EXPORTS
+   EXPOSE SAFE GLOBALS
 ======================= */
 window.store = store;
 window.guardPage = guardPage;
