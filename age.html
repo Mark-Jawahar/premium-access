@@ -1,31 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verification</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Age Verification</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="glass-card">
-    <div style="font-size: 48px; margin-bottom: 16px;">🔞</div>
+
+  <div class="card">
+    <div style="font-size:48px; margin-bottom:16px;">🔞</div>
+
     <h1>Age Verification</h1>
-    <p class="subtitle">This platform contains restricted premium content. You must be 18+ to enter.</p>
-    
-    <button class="btn-gold" onclick="verifyAge(true)">I am 18 or older</button>
-    <button class="btn-ghost" onclick="verifyAge(false)">Exit</button>
+    <p class="subtitle">
+      This website contains restricted premium content.<br>
+      You must be <b>18 years or older</b> to continue.
+    </p>
+
+    <button class="btn-gold" onclick="confirmAge(true)">
+      I am 18 or older
+    </button>
+
+    <button class="btn-ghost" onclick="confirmAge(false)">
+      Exit
+    </button>
+
+    <p class="footer-note">
+      We comply with digital age-restriction regulations.
+    </p>
   </div>
 
   <script src="core.js"></script>
+
   <script>
-    function verifyAge(isAdult) {
+    function confirmAge(isAdult) {
       if (isAdult) {
-        store.set('age_verified', true);
-        window.location.href = 'login.html';
+        store.set("age_verified", true);
+        window.location.href = "login.html";
       } else {
-        window.location.href = 'https://google.com';
+        window.location.href = "https://google.com";
       }
     }
   </script>
+
 </body>
 </html>
