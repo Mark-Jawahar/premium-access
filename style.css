@@ -1,78 +1,102 @@
+/* =========================================================
+   PREMIUM iOS GLASS UI — CLEAN FINAL VERSION
+========================================================= */
+
+/* ================= ROOT VARIABLES ================= */
 :root {
   --bg-dark: #050505;
-  --glass-bg: rgba(25, 25, 25, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(25, 25, 25, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.12);
+
   --gold-light: #fcf6ba;
   --gold-main: #bf953f;
+  --gold-glow: rgba(191, 149, 63, 0.35);
+
   --text-main: #f5f5f7;
   --text-muted: #86868b;
+
   --danger: #ff453a;
+  --danger-glow: rgba(255, 69, 58, 0.45);
 }
 
+/* ================= RESET ================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* ================= BODY ================= */
 body {
-  background-color: var(--bg-dark);
-  background-image: radial-gradient(circle at 50% -20%, #2a2a2a 0%, var(--bg-dark) 80%);
-  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  background:
+    radial-gradient(circle at 50% -20%, #2a2a2a 0%, var(--bg-dark) 80%);
+  color: var(--text-main);
+  overflow-x: hidden;
 }
 
-/* iOS Glass Card */
-.glass-card {
+/* ================= CARD (GLASS) ================= */
+.card {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  padding: 32px 26px;
   background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 32px 24px;
+  border-radius: 26px;
   text-align: center;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+
+  animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ================= ANIMATIONS ================= */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 var(--danger-glow); }
+  70% { box-shadow: 0 0 0 12px rgba(255, 69, 58, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 69, 58, 0); }
+}
+
+/* ================= TEXT ================= */
 h1 {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .subtitle {
+  font-size: 14px;
   color: var(--text-muted);
-  font-size: 15px;
-  margin-bottom: 30px;
-  line-height: 1.4;
+  margin-bottom: 28px;
+  line-height: 1.5;
 }
 
-/* Inputs */
+/* ================= INPUT ================= */
 input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--glass-border);
-  color: var(--text-main);
-  padding: 16px;
-  border-radius: 14px;
-  font-size: 16px;
+  padding: 16px 18px;
   margin-bottom: 16px;
-  transition: 0.3s;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--text-main);
+  font-size: 16px;
+  transition: 0.25s ease;
 }
 
 input:focus {
@@ -81,109 +105,120 @@ input:focus {
   box-shadow: 0 0 0 4px rgba(191, 149, 63, 0.15);
 }
 
-/* Buttons */
+/* Validation */
+input.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 18px var(--danger-glow);
+}
+
+input.valid {
+  border-color: var(--gold-main);
+  box-shadow: 0 0 18px var(--gold-glow);
+}
+
+/* ================= BUTTONS ================= */
 .btn-gold {
   width: 100%;
   padding: 16px;
   background: linear-gradient(135deg, var(--gold-light), var(--gold-main));
   color: #000;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 15px rgba(191, 149, 63, 0.3);
+  box-shadow: 0 6px 18px var(--gold-glow);
+  transition: 0.25s ease;
 }
 
 .btn-gold:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(191, 149, 63, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px var(--gold-glow);
 }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-  font-size: 14px;
+.btn-gold:active {
+  transform: scale(0.96);
+}
+
+.text-link {
   margin-top: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
   cursor: pointer;
 }
 
-/* Funnel Lists */
-.plan-list {
+/* ================= LIST / PLANS ================= */
+.list-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-.plan-item {
+.item-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--glass-border);
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.25s ease;
   position: relative;
-  overflow: hidden;
 }
 
-.plan-item:hover {
+.item-card:hover {
+  transform: translateY(-2px);
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.plan-item.premium-glow {
+.item-card.premium {
   border-color: rgba(191, 149, 63, 0.5);
-  background: linear-gradient(145deg, rgba(191,149,63,0.1), transparent);
+  background: linear-gradient(
+    145deg,
+    rgba(191, 149, 63, 0.15),
+    transparent
+  );
 }
 
+/* ================= PLAN TEXT ================= */
 .plan-info { text-align: left; }
-.plan-title { font-size: 16px; font-weight: 600; color: #fff; }
+.plan-title { font-size: 16px; font-weight: 600; }
 .plan-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-.plan-price { font-size: 18px; font-weight: 700; color: var(--gold-light); }
+.price-tag { font-size: 18px; font-weight: 700; }
 
+/* ================= BADGE ================= */
 .badge {
   position: absolute;
-  top: 0; right: 0;
+  top: -6px;
+  right: 14px;
   background: var(--gold-main);
   color: #000;
   font-size: 10px;
   font-weight: 700;
   padding: 4px 8px;
-  border-bottom-left-radius: 12px;
+  border-radius: 8px;
 }
 
-.strike { text-decoration: line-through; color: var(--text-muted); font-size: 12px; margin-right: 4px; }
-
-/* Urgency Elements */
+/* ================= URGENCY ================= */
 .urgency-bar {
   background: rgba(255, 69, 58, 0.15);
   border: 1px solid rgba(255, 69, 58, 0.3);
-  color: #ff453a;
-  padding: 10px;
-  border-radius: 12px;
+  color: var(--danger);
+  padding: 12px;
+  border-radius: 14px;
   font-size: 13px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 69, 58, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 69, 58, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 69, 58, 0); }
-}
-
-.social-proof {
-  font-size: 12px;
-  color: var(--text-muted);
+/* ================= FOOTER ================= */
+.footer-note {
   margin-top: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  font-size: 11px;
+  color: #777;
+  letter-spacing: 0.5px;
 }
