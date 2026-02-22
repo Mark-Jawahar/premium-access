@@ -5,115 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Secure Login</title>
 
-  <!-- Premium UI -->
+  <!-- Premium Glass UI -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase -->
-  <script type="module" src="firebase.js"></script>
 </head>
 
 <body onload="guardPage('login')">
 
-  <div class="card">
-    <h1>Welcome Back</h1>
-    <p class="subtitle">Verify your mobile number to continue</p>
+  <div class="card" id="loginCard">
 
-    <!-- PHONE INPUT -->
-    <input
-      id="phone"
-      type="tel"
-      placeholder="+91 98765 43210"
-      autocomplete="tel"
-    />
+    <!-- STEP 1: EMAIL -->
+    <div id="stepEmail">
+      <h1>Secure Access</h1>
+      <p class="subtitle">
+        Enter your email to receive a one-time verification code.
+      </p>
 
-    <!-- OTP INPUT -->
-    <input
-      id="otp"
-      type="number"
-      placeholder="Enter OTP"
-      class="hidden"
-    />
+      <input
+        type="email"
+        id="emailInput"
+        placeholder="Email address"
+        autocomplete="email"
+      />
 
-    <!-- ACTION BUTTON -->
-    <button id="actionBtn" class="btn-gold">
-      Send OTP
-    </button>
+      <button class="btn-gold" onclick="handleSendOTP()" id="sendBtn">
+        Continue
+      </button>
+    </div>
 
-    <!-- RECAPTCHA -->
-    <div
-      id="recaptcha-container"
-      style="margin-top:18px; display:flex; justify-content:center;"
-    ></div>
+    <!-- STEP 2: OTP -->
+    <div id="stepOTP" style="display:none;">
+      <h1>Verify Email</h1>
+      <p class="subtitle">
+        We’ve sent a 6-digit code to your email.
+      </p>
 
-    <p class="footer-note">
-      Your number is never shared. Secure OTP verification.
-    </p>
+      <input
+        type="text"
+        id="otpInput"
+        placeholder="Enter OTP"
+        inputmode="numeric"
+        maxlength="6"
+      />
+
+      <button class="btn-gold" onclick="handleVerifyOTP()" id="verifyBtn">
+        Verify & Continue
+      </button>
+
+      <div class="footer-note" style="margin-top:18px;">
+        Didn’t receive it? Check spam or wait 60 seconds.
+      </div>
+    </div>
+
   </div>
 
-  <!-- CORE -->
+  <!-- CORE ENGINE -->
   <script src="core.js"></script>
 
-  <!-- LOGIN LOGIC -->
-  <script type="module">
-    import { sendOTP, verifyOTP } from "./firebase.js";
+  <!-- PAGE LOGIC -->
+  <script>
+    const emailEl = document.getElementById("emailInput");
+    const otpEl   = document.getElementById("otpInput");
 
-    const phoneInput = document.getElementById("phone");
-    const otpInput = document.getElementById("otp");
-    const btn = document.getElementById("actionBtn");
+    const stepEmail = document.getElementById("stepEmail");
+    const stepOTP   = document.getElementById("stepOTP");
 
-    let otpSent = false;
+    const sendBtn   = document.getElementById("sendBtn");
+    const verifyBtn = document.getElementById("verifyBtn");
 
-    btn.onclick = async () => {
-      // STEP 1: SEND OTP
-      if (!otpSent) {
-        const phone = phoneInput.value.trim();
+    /* =========================
+       SEND OTP
+    ========================= */
+    async function handleSendOTP() {
+      const email = emailEl.value.trim();
 
-        if (!phone.startsWith("+")) {
-          alert("Enter phone number with country code (e.g. +91...)");
-          return;
-        }
-
-        btn.innerText = "Sending...";
-        btn.disabled = true;
-
-        const success = await sendOTP(phone);
-
-        if (success) {
-          otpSent = true;
-          otpInput.classList.remove("hidden");
-          btn.innerText = "Verify OTP";
-        } else {
-          btn.innerText = "Send OTP";
-        }
-
-        btn.disabled = false;
+      if (!email || !email.includes("@")) {
+        emailEl.classList.add("invalid");
         return;
       }
 
-      // STEP 2: VERIFY OTP
-      const otp = otpInput.value.trim();
+      emailEl.classList.remove("invalid");
+      sendBtn.innerText = "Sending…";
+      sendBtn.disabled = true;
+
+      try {
+        await sendEmailOTP(email);
+
+        stepEmail.style.display = "none";
+        stepOTP.style.display = "block";
+
+      } catch (e) {
+        alert("Failed to send OTP. Try again.");
+      }
+
+      sendBtn.innerText = "Continue";
+      sendBtn.disabled = false;
+    }
+
+    /* =========================
+       VERIFY OTP
+    ========================= */
+    async function handleVerifyOTP() {
+      const otp = otpEl.value.trim();
+
       if (otp.length < 4) {
-        alert("Enter valid OTP");
+        otpEl.classList.add("invalid");
         return;
       }
 
-      btn.innerText = "Verifying...";
-      btn.disabled = true;
+      otpEl.classList.remove("invalid");
+      verifyBtn.innerText = "Verifying…";
+      verifyBtn.disabled = true;
 
-      const user = await verifyOTP(otp);
+      const success = await verifyEmailOTP(otp);
 
-      if (user) {
-        setLoggedIn({
-          phone: user.phoneNumber,
-          uid: user.uid
-        });
-
+      if (success) {
         window.location.href = "choice.html";
       } else {
-        btn.innerText = "Verify OTP";
-        btn.disabled = false;
+        otpEl.classList.add("invalid");
+        alert("Invalid or expired OTP");
       }
-    };
+
+      verifyBtn.innerText = "Verify & Continue";
+      verifyBtn.disabled = false;
+    }
   </script>
 
 </body>
