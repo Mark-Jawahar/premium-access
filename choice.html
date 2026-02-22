@@ -20,7 +20,7 @@
     <div class="list-container">
 
       <!-- FREE OPTION -->
-      <div class="item-card" onclick="goFree()">
+      <div class="item-card" onclick="selectAccess('guest', 'free.html', this)">
         <div class="plan-info">
           <div class="plan-title">Guest Pass</div>
           <div class="plan-desc">
@@ -31,7 +31,7 @@
       </div>
 
       <!-- PREMIUM OPTION -->
-      <div class="item-card premium" onclick="goPremium()">
+      <div class="item-card premium" onclick="selectAccess('premium', 'exclusive.html', this)">
         <span class="badge">RECOMMENDED</span>
         <div class="plan-info">
           <div class="plan-title">VIP Premium</div>
@@ -53,12 +53,22 @@
   <script src="core.js"></script>
 
   <script>
-    function goFree() {
-      window.location.href = "free.html";
-    }
+    let accessLocked = false;
 
-    function goPremium() {
-      window.location.href = "exclusive.html";
+    function selectAccess(level, target, el) {
+      if (accessLocked) return;
+      accessLocked = true;
+
+      // Visual tap feedback (iOS-style)
+      el.style.transform = "scale(0.97)";
+      el.style.opacity = "0.9";
+
+      // Store intent (not payment)
+      store.set("access_level", level);
+
+      setTimeout(() => {
+        window.location.href = target;
+      }, 180);
     }
   </script>
 
