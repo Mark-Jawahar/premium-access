@@ -1,20 +1,66 @@
-// 1. Import Firebase from the CDN
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+// firebase.js — FINAL FIXED VERSION
 
-// 2. Your web app's Firebase configuration
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getAuth,
+  signInWithPhoneNumber,
+  RecaptchaVerifier
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCLklB9xFWDWC3mvzNMPz9ADJ2P6eETyB4",
   authDomain: "premium-page.firebaseapp.com",
   projectId: "premium-page",
   storageBucket: "premium-page.firebasestorage.app",
   messagingSenderId: "35609923793",
-  appId: "1:35609923793:web:1d133a99d3a904cbec35f0"
+  appId: "1:35609923793:web:0d9f0c7eb7688c8aec35f0"
 };
 
-// 3. Initialize Firebase (Done only once)
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+auth.languageCode = "en";
 
-// 4. EXPORT the tools so login.html can actually use them
-export { auth, RecaptchaVerifier, signInWithPhoneNumber };
+let confirmationResult;
+
+/* 🔐 INIT INVISIBLE RECAPTCHA */
+window.initRecaptcha = () => {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha",
+      { size: "invisible" }
+    );
+  }
+};
+
+/* 📲 SEND OTP */
+window.sendOTP = async (phoneNumber) => {
+  try {
+    initRecaptcha();
+    confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      window.recaptchaVerifier
+    );
+    alert("OTP sent ✅");
+    return true;
+  } catch (e) {
+    alert(e.message);
+    console.error(e);
+    return false;
+  }
+};
+
+/* ✅ VERIFY OTP */
+window.verifyOTP = async (otp) => {
+  try {
+    const result = await confirmationResult.confirm(otp);
+    return result.user;
+  } catch (e) {
+    alert("Invalid OTP ❌");
+    return null;
+  }
+};
