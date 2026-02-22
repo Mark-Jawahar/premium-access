@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body onload="guardPage('login')">
+
+  <div class="card">
+    <h1>Secure Access</h1>
+    <p class="subtitle">
+      Enter your email to receive a one-time verification code
+    </p>
+
+    <!-- EMAIL INPUT -->
+    <input
+      type="email"
+      id="email"
+      placeholder="Email address"
+      autocomplete="email"
+    />
+
+    <!-- SEND OTP -->
+    <button class="btn-gold" id="sendBtn" onclick="sendOTP()">
+      Send OTP
+    </button>
+
+    <!-- OTP INPUT -->
+    <input
+      type="text"
+      id="otp"
+      placeholder="Enter 6-digit OTP"
+      maxlength="6"
+      class="hidden"
+      inputmode="numeric"
+    />
+
+    <!-- VERIFY OTP -->
+    <button
+      class="btn-gold hidden"
+      id="verifyBtn"
+      onclick="verifyOTP()"
+    >
+      Verify & Continue
+    </button>
+
+    <p class="footer-note">
+      We never store your password. Secure email verification only.
+    </p>
+  </div>
+
+  <script src="core.js"></script>
+
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbyDLsfNVKNDwOTPgVpOkUpXlQd5HPwIZ3g71IAt5fjfGWUWKHXg_5c2f2lrJvlvnrig5g/exec";
+
+    const emailInput = document.getElementById("email");
+    const otpInput = document.getElementById("otp");
+    const sendBtn = document.getElementById("sendBtn");
+    const verifyBtn = document.getElementById("verifyBtn");
+
+    /* ---------- SEND OTP ---------- */
+    function sendOTP() {
+      const email = emailInput.value.trim();
+
+      if (!email || !email.includes("@")) {
+        emailInput.classList.add("invalid");
+        return;
+      }
+
+      sendBtn.innerText = "Sending...";
+      sendBtn.disabled = true;
+
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "send",
+          email: email
+        })
+      })
+      .then(res => res.json())
+      .then(() => {
+        emailInput.classList.add("valid");
+        otpInput.classList.remove("hidden");
+        verifyBtn.classList.remove("hidden");
+        otpInput.focus();
+        sendBtn.innerText = "OTP Sent";
+      })
+      .catch(() => {
+        alert("Failed to send OTP. Try again.");
+        sendBtn.innerText = "Send OTP";
+        sendBtn.disabled = false;
+      });
+    }
+
+    /* ---------- VERIFY OTP ---------- */
+    function verifyOTP() {
+      const email = emailInput.value.trim();
+      const otp = otpInput.value.trim();
+
+      if (otp.length !== 6) {
+        otpInput.classList.add("invalid");
+        return;
+      }
+
+      verifyBtn.innerText = "Verifying...";
+      verifyBtn.disabled = true;
+
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "verify",
+          email: email,
+          otp: otp
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          store.set("user_email", email);
+          window.location.href = "choice.html";
+        } else {
+          alert("Invalid or expired OTP");
+          verifyBtn.innerText = "Verify & Continue";
+          verifyBtn.disabled = false;
+        }
+      })
+      .catch(() => {
+        alert("Verification failed");
+        verifyBtn.innerText = "Verify & Continue";
+        verifyBtn.disabled = false;
+      });
+    }
+  </script>
+
+</body>
+</html>
