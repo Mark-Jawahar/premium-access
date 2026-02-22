@@ -4,18 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Age Verification</title>
+
+  <!-- Premium UI -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
   <div class="card">
-    <div style="font-size:48px; margin-bottom:16px;">🔞</div>
+    <div style="font-size:48px; margin-bottom:14px;">🔞</div>
 
     <h1>Age Verification</h1>
     <p class="subtitle">
-      This website contains restricted premium content.<br>
-      You must be <b>18 years or older</b> to continue.
+      This website contains restricted premium content.<br />
+      You must confirm that you are <b>18 years or older</b>.
     </p>
 
     <button class="btn-gold" onclick="confirmAge(true)">
@@ -27,21 +29,34 @@
     </button>
 
     <p class="footer-note">
-      We comply with digital age-restriction regulations.
+      By continuing, you confirm that you meet the legal age requirement.
     </p>
   </div>
 
+  <!-- CORE -->
   <script src="core.js"></script>
 
   <script>
+    /* ===============================
+       AGE CONFIRMATION
+    ================================ */
     function confirmAge(isAdult) {
       if (isAdult) {
         store.set("age_verified", true);
-        window.location.href = "login.html";
+        window.location.replace("login.html");
       } else {
-        window.location.href = "https://google.com";
+        // Hard exit for compliance
+        window.location.replace("https://www.google.com");
       }
     }
+
+    /* ===============================
+       BLOCK BACK NAVIGATION
+    ================================ */
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+      history.go(1);
+    };
   </script>
 
 </body>
