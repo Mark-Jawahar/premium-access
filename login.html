@@ -5,128 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Secure Login</title>
 
-  <!-- Premium Glass UI -->
+  <!-- Premium UI -->
   <link rel="stylesheet" href="style.css" />
-</head>
 
+</head>
 <body onload="guardPage('login')">
 
-  <div class="card" id="loginCard">
+  <div class="card">
+    <h1>Secure Access</h1>
+    <p class="subtitle">Enter your email to receive a one-time code</p>
 
-    <!-- STEP 1: EMAIL -->
-    <div id="stepEmail">
-      <h1>Secure Access</h1>
-      <p class="subtitle">
-        Enter your email to receive a one-time verification code.
-      </p>
+    <!-- EMAIL -->
+    <input
+      type="email"
+      id="email"
+      placeholder="you@example.com"
+      autocomplete="email"
+    />
 
-      <input
-        type="email"
-        id="emailInput"
-        placeholder="Email address"
-        autocomplete="email"
-      />
+    <!-- SEND OTP -->
+    <button class="btn-gold" id="sendBtn" onclick="sendOTP()">
+      Send OTP
+    </button>
 
-      <button class="btn-gold" onclick="handleSendOTP()" id="sendBtn">
-        Continue
-      </button>
-    </div>
+    <!-- OTP -->
+    <input
+      type="text"
+      id="otp"
+      class="hidden"
+      placeholder="Enter 6-digit OTP"
+      inputmode="numeric"
+    />
 
-    <!-- STEP 2: OTP -->
-    <div id="stepOTP" style="display:none;">
-      <h1>Verify Email</h1>
-      <p class="subtitle">
-        We’ve sent a 6-digit code to your email.
-      </p>
+    <!-- VERIFY -->
+    <button
+      class="btn-gold hidden"
+      id="verifyBtn"
+      onclick="verifyOTP()"
+    >
+      Verify & Continue
+    </button>
 
-      <input
-        type="text"
-        id="otpInput"
-        placeholder="Enter OTP"
-        inputmode="numeric"
-        maxlength="6"
-      />
-
-      <button class="btn-gold" onclick="handleVerifyOTP()" id="verifyBtn">
-        Verify & Continue
-      </button>
-
-      <div class="footer-note" style="margin-top:18px;">
-        Didn’t receive it? Check spam or wait 60 seconds.
-      </div>
-    </div>
-
+    <p class="footer-note" id="status"></p>
   </div>
 
-  <!-- CORE ENGINE -->
+  <!-- CORE LOGIC -->
   <script src="core.js"></script>
 
-  <!-- PAGE LOGIC -->
   <script>
-    const emailEl = document.getElementById("emailInput");
-    const otpEl   = document.getElementById("otpInput");
+    /* ===============================
+       CONFIG
+    ================================ */
+    const API_URL = "https://script.google.com/macros/s/AKfycbyDLsfNVKNDwOTPgVpOkUpXlQd5HPwIZ3g71IAt5fjfGWUWKHXg_5c2f2lrJvlvnrig5g/exec";
+    let cooldown = false;
 
-    const stepEmail = document.getElementById("stepEmail");
-    const stepOTP   = document.getElementById("stepOTP");
-
-    const sendBtn   = document.getElementById("sendBtn");
+    const emailInput = document.getElementById("email");
+    const otpInput = document.getElementById("otp");
+    const sendBtn = document.getElementById("sendBtn");
     const verifyBtn = document.getElementById("verifyBtn");
+    const statusText = document.getElementById("status");
 
-    /* =========================
+    /* ===============================
        SEND OTP
-    ========================= */
-    async function handleSendOTP() {
-      const email = emailEl.value.trim();
+    ================================ */
+    function sendOTP() {
+      const email = emailInput.value.trim().toLowerCase();
 
       if (!email || !email.includes("@")) {
-        emailEl.classList.add("invalid");
+        status("Please enter a valid email address");
         return;
       }
 
-      emailEl.classList.remove("invalid");
-      sendBtn.innerText = "Sending…";
+      if (cooldown) return;
+
+      cooldown = true;
       sendBtn.disabled = true;
+      status("Sending OTP…");
 
-      try {
-        await sendEmailOTP(email);
-
-        stepEmail.style.display = "none";
-        stepOTP.style.display = "block";
-
-      } catch (e) {
-        alert("Failed to send OTP. Try again.");
-      }
-
-      sendBtn.innerText = "Continue";
-      sendBtn.disabled = false;
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "send",
+          email: email
+        })
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (res.success) {
+            otpInput.classList.remove("hidden");
+            verifyBtn.classList.remove("hidden");
+            status("OTP sent. Check your inbox.");
+          } else {
+            status(res.message || "Failed to send OTP");
+          }
+        })
+        .catch(() => status("Network error. Try again."))
+        .finally(() => {
+          setTimeout(() => {
+            cooldown = false;
+            sendBtn.disabled = false;
+          }, 30000); // 30s resend lock
+        });
     }
 
-    /* =========================
+    /* ===============================
        VERIFY OTP
-    ========================= */
-    async function handleVerifyOTP() {
-      const otp = otpEl.value.trim();
+    ================================ */
+    function verifyOTP() {
+      const email = emailInput.value.trim().toLowerCase();
+      const otp = otpInput.value.trim();
 
       if (otp.length < 4) {
-        otpEl.classList.add("invalid");
+        status("Enter the OTP you received");
         return;
       }
 
-      otpEl.classList.remove("invalid");
-      verifyBtn.innerText = "Verifying…";
-      verifyBtn.disabled = true;
+      status("Verifying…");
 
-      const success = await verifyEmailOTP(otp);
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "verify",
+          email: email,
+          otp: otp
+        })
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (res.success) {
+            store.set("user_email", email);
+            window.location.href = "choice.html";
+          } else {
+            status("Invalid or expired OTP");
+          }
+        })
+        .catch(() => status("Verification failed"));
+    }
 
-      if (success) {
-        window.location.href = "choice.html";
-      } else {
-        otpEl.classList.add("invalid");
-        alert("Invalid or expired OTP");
-      }
-
-      verifyBtn.innerText = "Verify & Continue";
-      verifyBtn.disabled = false;
+    function status(msg) {
+      statusText.innerText = msg;
     }
   </script>
 
