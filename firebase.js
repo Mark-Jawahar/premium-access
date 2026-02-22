@@ -13,7 +13,7 @@ const firebaseConfig = {
   projectId: "premium-page",
   storageBucket: "premium-page.firebasestorage.app",
   messagingSenderId: "35609923793",
-  appId: "1:35609923793:web:0d9f0c7eb7688c8aec35f0"
+  appId: "1:35609923793:web:71a66151d0ea3cc5ec35f0"
 };
 
 const app = initializeApp(firebaseConfig);
