@@ -1,4 +1,4 @@
-// firebase.js — FINAL WORKING VERSION
+// firebase.js — CLEAN & WORKING (WEB OTP)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
@@ -7,7 +7,7 @@ import {
   RecaptchaVerifier
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-/* 🔐 YOUR REAL CONFIG (CONFIRMED OK) */
+/* 🔐 FIREBASE CONFIG (YOUR PROJECT) */
 const firebaseConfig = {
   apiKey: "AIzaSyCLklB9xFWDWC3mvzNMPz9ADJ2P6eETyB4",
   authDomain: "premium-page.firebaseapp.com",
@@ -17,13 +17,15 @@ const firebaseConfig = {
   appId: "1:35609923793:web:71a66151d0ea3cc5ec35f0"
 };
 
+/* 🔹 INIT FIREBASE */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 auth.languageCode = "en";
 
+/* 🔹 GLOBAL CONFIRMATION */
 let confirmationResult = null;
 
-/* 🔴 VERY IMPORTANT: RENDER reCAPTCHA */
+/* 🔐 CREATE & RENDER reCAPTCHA (ONCE) */
 window.recaptchaVerifier = new RecaptchaVerifier(
   auth,
   "recaptcha-container",
@@ -38,7 +40,7 @@ window.recaptchaVerifier = new RecaptchaVerifier(
 window.recaptchaVerifier.render();
 
 /* 📲 SEND OTP */
-window.sendOTP = async (phoneNumber) => {
+window.sendOTP = async function (phoneNumber) {
   try {
     confirmationResult = await signInWithPhoneNumber(
       auth,
@@ -47,19 +49,19 @@ window.sendOTP = async (phoneNumber) => {
     );
     console.log("OTP sent");
     return true;
-  } catch (e) {
-    console.error(e);
-    alert(e.message);
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
     return false;
   }
 };
 
 /* ✅ VERIFY OTP */
-window.verifyOTP = async (otp) => {
+window.verifyOTP = async function (otp) {
   try {
     const result = await confirmationResult.confirm(otp);
     return result.user;
-  } catch (e) {
+  } catch (error) {
     alert("Invalid OTP");
     return null;
   }
