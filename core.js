@@ -1,19 +1,18 @@
-/* ======================================================
-   CORE.JS — APP BRAIN (EMAIL OTP VERSION)
-   ====================================================== */
+/* =====================================================
+   CORE.JS — CENTRAL BRAIN (AUTH • ACCESS • STATE)
+   Premium / iOS-style / Zero framework
+===================================================== */
 
-/* ---------- SAFE STORAGE WRAPPER ---------- */
+/* -------------------------
+   SIMPLE STORAGE WRAPPER
+------------------------- */
 const store = {
   set(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
   },
   get(key) {
-    const v = localStorage.getItem(key);
-    try {
-      return JSON.parse(v);
-    } catch {
-      return null;
-    }
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : null;
   },
   remove(key) {
     localStorage.removeItem(key);
@@ -23,59 +22,90 @@ const store = {
   }
 };
 
-/* ---------- AUTH HELPERS ---------- */
-function isLoggedIn() {
-  return !!store.get("user_email");
-}
-
-function requireLogin() {
-  if (!isLoggedIn()) {
-    window.location.href = "login.html";
-  }
-}
-
-/* ---------- PAGE GUARDS ---------- */
+/* -------------------------
+   PAGE ACCESS GUARD
+------------------------- */
 function guardPage(page) {
   const ageVerified = store.get("age_verified");
-  const loggedIn = isLoggedIn();
-  const hasPaid = store.get("paid_user");
+  const loggedIn = store.get("logged_in");
+  const paid = store.get("paid_user");
 
-  // Age gate
+  // AGE GATE
   if (!ageVerified && page !== "age") {
     window.location.href = "age.html";
     return;
   }
 
-  // Pages that require login
-  const loginRequiredPages = ["choice", "free", "exclusive", "thankyou"];
-  if (loginRequiredPages.includes(page) && !loggedIn) {
+  // LOGIN REQUIRED
+  if (
+    ageVerified &&
+    !loggedIn &&
+    !["age", "login"].includes(page)
+  ) {
     window.location.href = "login.html";
     return;
   }
 
-  // Paid-only page
-  if (page === "thankyou" && !hasPaid) {
-    window.location.href = "exclusive.html";
+  // PAYMENT REQUIRED
+  if (page === "exclusive" && !paid) {
+    window.location.href = "choice.html";
+    return;
+  }
+
+  // THANK YOU PAGE ONLY AFTER PAYMENT
+  if (page === "thankyou" && !paid) {
+    window.location.href = "choice.html";
     return;
   }
 }
 
-/* ---------- LOGOUT ---------- */
+/* -------------------------
+   LOGIN STATE
+------------------------- */
+function setLoggedIn(userData = {}) {
+  store.set("logged_in", true);
+  store.set("user", userData);
+}
+
+/* -------------------------
+   PAYMENT STATE
+------------------------- */
+function setPaid(paymentData) {
+  store.set("paid_user", true);
+  store.set("last_payment", paymentData);
+}
+
+/* -------------------------
+   LOGOUT (OPTIONAL)
+------------------------- */
 function logout() {
   store.clear();
-  window.location.href = "index.html";
+  window.location.href = "age.html";
 }
 
-/* ---------- PAYMENT HELPERS ---------- */
-function markPaid(plan, amount, paymentId) {
-  store.set("paid_user", true);
-  store.set("last_payment", {
-    plan,
-    amount,
-    payment_id: paymentId,
-    time: Date.now()
-  });
-}
+/* -------------------------
+   RAZORPAY STARTER
+------------------------- */
+function startPayment(plan, amount) {
+  const options = {
+    key: "YOUR_RAZORPAY_KEY",
+    amount: amount * 100,
+    currency: "INR",
+    name: "Premium Access",
+    description: plan,
+    handler: function (response) {
+      setPaid({
+        plan,
+        amount,
+        payment_id: response.razorpay_payment_id
+      });
+      window.location.href = "thankyou.html";
+    },
+    theme: {
+      color: "#bf953f"
+    }
+  };
 
-/* ---------- DEBUG (OPTIONAL) ---------- */
-window.store = store;
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
