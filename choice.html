@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Select Access</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Access</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body onload="guardPage('choice')">
-  <div class="glass-card">
-    <h1>Choose Access</h1>
-    <p class="subtitle">Select how you want to proceed.</p>
 
-    <div class="plan-list">
-      <div class="plan-item" onclick="window.location.href='free.html'">
+<body onload="guardPage('choice')">
+
+  <div class="card">
+    <h1>Choose Your Access</h1>
+    <p class="subtitle">Select how you’d like to continue.</p>
+
+    <div class="list-container">
+
+      <div class="item-card" onclick="location.href='free.html'">
         <div class="plan-info">
-          <div class="plan-title">Guest Pass</div>
-          <div class="plan-desc">Watch limited teaser clips</div>
+          <div class="plan-title">Guest Preview</div>
+          <div class="plan-desc">Limited teaser access</div>
         </div>
-        <div class="plan-price" style="color:var(--text-main)">Free</div>
+        <div class="price-tag">Free</div>
       </div>
 
-      <div class="plan-item premium-glow" onclick="window.location.href='exclusive.html'">
-        <div class="badge">RECOMMENDED</div>
+      <div class="item-card premium" onclick="location.href='exclusive.html'">
+        <div class="badge">BEST VALUE</div>
         <div class="plan-info">
           <div class="plan-title">VIP Premium</div>
           <div class="plan-desc">Unlock full private library</div>
         </div>
-        <div class="plan-price">👑</div>
+        <div class="price-tag">👑</div>
       </div>
+
     </div>
+
   </div>
 
   <script src="core.js"></script>
