@@ -1,84 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exclusive Access</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlock Premium</title>
+
+  <link rel="stylesheet" href="style.css" />
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
-<body onload="guardPage('exclusive')">
-  <div class="glass-card">
-    <h1>Unlock Everything</h1>
-    <p class="subtitle">Choose your plan and get instant access.</p>
 
+<body onload="guardPage('exclusive')">
+
+  <div class="card">
+    <h1>Unlock Everything</h1>
+    <p class="subtitle">
+      Choose a plan and get instant access to the full private library.
+    </p>
+
+    <!-- URGENCY -->
     <div class="urgency-bar">
-      ⏳ Limited Offer expires in: <span id="timer">14:59</span>
+      ⏳ Limited-time offer ends in <span id="timer">14:59</span>
     </div>
 
-    <div class="plan-list">
-      <div class="plan-item" onclick="startPayment('Starter', 49)">
+    <!-- PLANS -->
+    <div class="list-container">
+
+      <div class="item-card" onclick="pay('Starter', 49)">
         <div class="plan-info">
           <div class="plan-title">Starter</div>
           <div class="plan-desc">1 Premium Video</div>
         </div>
-        <div class="plan-price">₹49</div>
+        <div class="price-tag">₹49</div>
       </div>
 
-      <div class="plan-item" onclick="startPayment('Essential', 99)">
+      <div class="item-card" onclick="pay('Essential', 99)">
         <div class="plan-info">
           <div class="plan-title">Essential</div>
           <div class="plan-desc">5 Premium Videos</div>
         </div>
-        <div class="plan-price">₹99</div>
+        <div class="price-tag">₹99</div>
       </div>
 
-      <div class="plan-item" onclick="startPayment('Popular', 199)">
-        <div class="plan-info">
-          <div class="plan-title">Popular</div>
-          <div class="plan-desc">10 Premium Videos</div>
-        </div>
-        <div class="plan-price">₹199</div>
-      </div>
-
-      <div class="plan-item premium-glow" onclick="startPayment('VIP Lifetime', 299)">
-        <div class="badge">FLASH SALE</div>
+      <div class="item-card premium" onclick="pay('VIP Lifetime', 299)">
+        <div class="badge">BEST VALUE</div>
         <div class="plan-info">
           <div class="plan-title">VIP Lifetime</div>
-          <div class="plan-desc">50+ Videos (Full Library)</div>
+          <div class="plan-desc">50+ Videos · Full Library</div>
         </div>
-        <div class="plan-price"><span class="strike">₹499</span> ₹299</div>
+        <div class="price-tag">
+          <span style="opacity:.5; text-decoration:line-through;">₹499</span>
+          ₹299
+        </div>
       </div>
+
     </div>
 
-    <div class="social-proof">
-      <span style="color: #34c759;">●</span> 
-      <b id="live-count">1,247</b> members unlocked premium today
+    <!-- TRUST -->
+    <div class="footer-note" style="margin-top:18px;">
+      🔒 Secure Razorpay payment · Instant activation · No subscriptions
     </div>
 
-    <button class="btn-ghost" onclick="window.location.href='choice.html'">Back</button>
+    <!-- BACK -->
+    <button
+      class="btn-ghost"
+      style="margin-top:14px;"
+      onclick="location.href='choice.html'"
+    >
+      Back
+    </button>
   </div>
 
   <script src="core.js"></script>
+
   <script>
-    // Timer Logic
-    let time = 899; // 15 mins
+    /* ---------- TIMER ---------- */
+    let t = 899;
     setInterval(() => {
-      const min = Math.floor(time / 60);
-      let sec = time % 60;
-      sec = sec < 10 ? '0' + sec : sec;
-      document.getElementById('timer').innerText = `${min}:${sec}`;
-      if(time > 0) time--;
+      const m = Math.floor(t / 60);
+      let s = t % 60;
+      s = s < 10 ? "0" + s : s;
+      document.getElementById("timer").innerText = `${m}:${s}`;
+      if (t > 0) t--;
     }, 1000);
 
-    // Randomize Social Proof Hook slightly to look alive
-    let baseCount = 1247;
-    setInterval(() => {
-      if(Math.random() > 0.7) {
-        baseCount += Math.floor(Math.random() * 3);
-        document.getElementById('live-count').innerText = baseCount.toLocaleString();
-      }
-    }, 5000);
+    /* ---------- PAYMENT LOCK ---------- */
+    let paying = false;
+
+    function pay(plan, amount) {
+      if (paying) return;
+      paying = true;
+      startPayment(plan, amount);
+      setTimeout(() => paying = false, 3000);
+    }
   </script>
+
 </body>
 </html>
