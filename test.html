@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <button onclick="test()">Send OTP Test</button>
+
+  <script>
+    function test() {
+      fetch("PASTE_NEW_SCRIPT_URL", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "send",
+          email: "markjawahar17@gmail.com"
+        })
+      })
+      .then(r => r.json())
+      .then(d => alert(JSON.stringify(d)))
+      .catch(e => alert(e));
+    }
+  </script>
+</body>
+</html>
