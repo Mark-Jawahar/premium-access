@@ -4,38 +4,63 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Access</title>
+
+  <!-- Premium UI -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body onload="guardPage('choice')">
 
   <div class="card">
-    <h1>Choose Your Access</h1>
-    <p class="subtitle">Select how you’d like to continue.</p>
+    <h1>Choose Access</h1>
+    <p class="subtitle">
+      Select how you want to continue
+    </p>
 
     <div class="list-container">
 
-      <div class="item-card" onclick="location.href='free.html'">
+      <!-- FREE OPTION -->
+      <div class="item-card" onclick="goFree()">
         <div class="plan-info">
-          <div class="plan-title">Guest Preview</div>
-          <div class="plan-desc">Limited teaser access</div>
+          <div class="plan-title">Guest Pass</div>
+          <div class="plan-desc">
+            Preview limited teaser clips
+          </div>
         </div>
         <div class="price-tag">Free</div>
       </div>
 
-      <div class="item-card premium" onclick="location.href='exclusive.html'">
-        <div class="badge">BEST VALUE</div>
+      <!-- PREMIUM OPTION -->
+      <div class="item-card premium" onclick="goPremium()">
+        <span class="badge">RECOMMENDED</span>
         <div class="plan-info">
           <div class="plan-title">VIP Premium</div>
-          <div class="plan-desc">Unlock full private library</div>
+          <div class="plan-desc">
+            Unlock the full private library
+          </div>
         </div>
         <div class="price-tag">👑</div>
       </div>
 
     </div>
 
+    <p class="footer-note">
+      You can upgrade anytime
+    </p>
   </div>
 
+  <!-- CORE -->
   <script src="core.js"></script>
+
+  <script>
+    function goFree() {
+      window.location.href = "free.html";
+    }
+
+    function goPremium() {
+      window.location.href = "exclusive.html";
+    }
+  </script>
+
 </body>
 </html>
