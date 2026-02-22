@@ -1,4 +1,4 @@
-// firebase.js — FINAL FIXED VERSION
+// firebase.js — FINAL WORKING VERSION
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
@@ -7,6 +7,7 @@ import {
   RecaptchaVerifier
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+/* 🔐 YOUR REAL CONFIG (CONFIRMED OK) */
 const firebaseConfig = {
   apiKey: "AIzaSyCLklB9xFWDWC3mvzNMPz9ADJ2P6eETyB4",
   authDomain: "premium-page.firebaseapp.com",
@@ -20,23 +21,25 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 auth.languageCode = "en";
 
-let confirmationResult;
+let confirmationResult = null;
 
-/* INIT RECAPTCHA */
-window.initRecaptcha = () => {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha",
-      { size: "invisible" }
-    );
+/* 🔴 VERY IMPORTANT: RENDER reCAPTCHA */
+window.recaptchaVerifier = new RecaptchaVerifier(
+  auth,
+  "recaptcha-container",
+  {
+    size: "normal",
+    callback: () => {
+      console.log("reCAPTCHA solved");
+    }
   }
-};
+);
 
-/* SEND OTP */
+window.recaptchaVerifier.render();
+
+/* 📲 SEND OTP */
 window.sendOTP = async (phoneNumber) => {
   try {
-    initRecaptcha();
     confirmationResult = await signInWithPhoneNumber(
       auth,
       phoneNumber,
@@ -51,7 +54,7 @@ window.sendOTP = async (phoneNumber) => {
   }
 };
 
-/* VERIFY OTP */
+/* ✅ VERIFY OTP */
 window.verifyOTP = async (otp) => {
   try {
     const result = await confirmationResult.confirm(otp);
