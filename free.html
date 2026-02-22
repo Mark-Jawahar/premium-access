@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Teasers</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Preview</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body onload="guardPage('free')">
-  <div class="glass-card">
-    <h1>Free Teasers</h1>
-    <p class="subtitle">A small glimpse of what awaits.</p>
 
-    <div class="plan-list" style="margin-bottom: 24px;">
-      <a href="YOUR_LINK_HERE" target="_blank" class="plan-item" style="text-decoration: none;">
+<body onload="guardPage('free')">
+
+  <div class="card">
+    <h1>Free Preview</h1>
+    <p class="subtitle">A glimpse of what awaits inside.</p>
+
+    <div class="list-container" style="margin-bottom:24px;">
+
+      <div class="item-card">
         <div class="plan-info">
           <div class="plan-title">Teaser Clip 01</div>
-          <div class="plan-desc">1:45 mins</div>
+          <div class="plan-desc">Duration: 1m 45s</div>
         </div>
-        <div class="plan-price">▶</div>
-      </a>
+        <div class="price-tag">▶</div>
+      </div>
+
     </div>
 
-    <button class="btn-gold" onclick="window.location.href='exclusive.html'">Unlock Full Videos</button>
-    <button class="btn-ghost" onclick="window.location.href='choice.html'">Back</button>
+    <button class="btn-gold" onclick="location.href='exclusive.html'">
+      Unlock Full Access
+    </button>
+
+    <div class="footer-note">
+      Premium content available after upgrade
+    </div>
   </div>
+
   <script src="core.js"></script>
 </body>
 </html>
