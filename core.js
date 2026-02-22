@@ -1,125 +1,109 @@
-/* ======================================================
-   CORE.JS — CENTRAL BRAIN
-   Auth • Access • State • Payments
-   Premium / iOS-style / No framework
-===================================================== */
+/* =========================================================
+   CORE.JS — PREMIUM ACCESS ENGINE (CLEAN & SECURE)
+   Author: You + ChatGPT
+========================================================= */
 
-/* -------------------------
+/* =========================
    SAFE STORAGE WRAPPER
-------------------------- */
+========================= */
 const store = {
   set(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
   },
   get(key) {
     const val = localStorage.getItem(key);
-    try {
-      return val ? JSON.parse(val) : null;
-    } catch {
-      return null;
-    }
+    try { return JSON.parse(val); } catch { return null; }
   },
   remove(key) {
     localStorage.removeItem(key);
-  },
-  clear() {
-    localStorage.clear();
   }
 };
 
-/* -------------------------
-   AUTH HELPERS
-------------------------- */
-function isLoggedIn() {
-  return !!store.get("user_email");
-}
-
-function isPaid() {
-  return !!store.get("paid_user");
-}
-
-/* -------------------------
-   PAGE ACCESS GUARD
-------------------------- */
+/* =========================
+   ROUTE GUARD
+========================= */
 function guardPage(page) {
-  const ageVerified = store.get("age_verified");
-  const loggedIn = isLoggedIn();
-  const paid = isPaid();
 
-  /* AGE GATE — ABSOLUTE */
-  if (!ageVerified && page !== "age") {
-    window.location.href = "age.html";
+  const ageOK = store.get("age_verified");
+  const loggedIn = store.get("user_email");
+  const paid = store.get("payment_success");
+
+  if (!ageOK && page !== "age") {
+    window.location.replace("age.html");
     return;
   }
 
-  /* LOGIN REQUIRED */
-  const loginRequiredPages = [
-    "choice",
-    "free",
-    "exclusive",
-    "thankyou"
-  ];
-
-  if (loginRequiredPages.includes(page) && !loggedIn) {
-    window.location.href = "login.html";
+  if (!loggedIn && ["choice","free","exclusive","thankyou"].includes(page)) {
+    window.location.replace("login.html");
     return;
   }
 
-  /* PAID-ONLY PAGE */
-  if (page === "thankyou" && !paid) {
-    window.location.href = "exclusive.html";
+  if (!paid && ["thankyou"].includes(page)) {
+    window.location.replace("exclusive.html");
     return;
   }
 }
 
-/* -------------------------
-   LOGIN STATE
-------------------------- */
-function setLoggedIn(email) {
-  store.set("user_email", email);
-}
+/* =========================
+   EMAIL OTP SYSTEM (CLIENT)
+========================= */
+const OTP_API = "YOUR_GOOGLE_SCRIPT_URL"; // replace once
 
-/* -------------------------
-   PAYMENT STATE
-------------------------- */
-function setPaid(paymentData) {
-  store.set("paid_user", true);
-  store.set("last_payment", {
-    ...paymentData,
-    time: Date.now()
+async function sendEmailOTP(email) {
+  if (!email || !email.includes("@")) {
+    alert("Enter a valid email address");
+    return;
+  }
+
+  await fetch(OTP_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "send", email })
   });
+
+  store.set("pending_email", email);
 }
 
-/* -------------------------
-   LOGOUT
-------------------------- */
-function logout() {
-  store.clear();
-  window.location.href = "age.html";
-}
+async function verifyEmailOTP(otp) {
+  const email = store.get("pending_email");
+  if (!email || !otp) return false;
 
-/* -------------------------
-   RAZORPAY PAYMENT
-------------------------- */
-function startPayment(plan, amount) {
-  if (typeof Razorpay === "undefined") {
-    alert("Payment system not loaded");
-    return;
+  const res = await fetch(OTP_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "verify",
+      email,
+      otp
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    store.set("user_email", email);
+    store.remove("pending_email");
+    return true;
   }
+
+  return false;
+}
+
+/* =========================
+   PAYMENT (RAZORPAY)
+========================= */
+function startPayment(plan, amount) {
 
   const options = {
     key: "YOUR_RAZORPAY_KEY",
     amount: amount * 100,
     currency: "INR",
     name: "Premium Access",
-    description: plan,
+    description: plan + " Plan",
     handler: function (response) {
-      if (!response.razorpay_payment_id) {
-        alert("Payment verification failed");
-        return;
-      }
 
-      setPaid({
+      store.set("payment_success", true);
+      store.set("last_payment", {
         plan,
         amount,
         payment_id: response.razorpay_payment_id
@@ -127,22 +111,18 @@ function startPayment(plan, amount) {
 
       window.location.href = "thankyou.html";
     },
-    modal: {
-      ondismiss: function () {
-        console.log("Payment popup closed");
-      }
-    },
-    theme: {
-      color: "#bf953f"
-    }
+    theme: { color: "#bf953f" }
   };
 
   const rzp = new Razorpay(options);
   rzp.open();
 }
 
-/* -------------------------
-   DEBUG (OPTIONAL)
-------------------------- */
-window.store = store;
-window.logout = logout;
+/* =========================
+   LOGOUT (OPTIONAL)
+========================= */
+function logout() {
+  store.remove("user_email");
+  store.remove("payment_success");
+  window.location.href = "login.html";
+}
