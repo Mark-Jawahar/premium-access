@@ -4,138 +4,116 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Secure Login</title>
+
+  <!-- Premium UI -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase -->
+  <script type="module" src="firebase.js"></script>
 </head>
 
 <body onload="guardPage('login')">
 
   <div class="card">
-    <h1>Secure Access</h1>
-    <p class="subtitle">
-      Enter your email to receive a one-time verification code
-    </p>
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Verify your mobile number to continue</p>
 
-    <!-- EMAIL INPUT -->
+    <!-- PHONE INPUT -->
     <input
-      type="email"
-      id="email"
-      placeholder="Email address"
-      autocomplete="email"
+      id="phone"
+      type="tel"
+      placeholder="+91 98765 43210"
+      autocomplete="tel"
     />
-
-    <!-- SEND OTP -->
-    <button class="btn-gold" id="sendBtn" onclick="sendOTP()">
-      Send OTP
-    </button>
 
     <!-- OTP INPUT -->
     <input
-      type="text"
       id="otp"
-      placeholder="Enter 6-digit OTP"
-      maxlength="6"
+      type="number"
+      placeholder="Enter OTP"
       class="hidden"
-      inputmode="numeric"
     />
 
-    <!-- VERIFY OTP -->
-    <button
-      class="btn-gold hidden"
-      id="verifyBtn"
-      onclick="verifyOTP()"
-    >
-      Verify & Continue
+    <!-- ACTION BUTTON -->
+    <button id="actionBtn" class="btn-gold">
+      Send OTP
     </button>
 
+    <!-- RECAPTCHA -->
+    <div
+      id="recaptcha-container"
+      style="margin-top:18px; display:flex; justify-content:center;"
+    ></div>
+
     <p class="footer-note">
-      We never store your password. Secure email verification only.
+      Your number is never shared. Secure OTP verification.
     </p>
   </div>
 
+  <!-- CORE -->
   <script src="core.js"></script>
 
-  <script>
-    const API = "https://script.google.com/macros/s/AKfycbyDLsfNVKNDwOTPgVpOkUpXlQd5HPwIZ3g71IAt5fjfGWUWKHXg_5c2f2lrJvlvnrig5g/exec";
+  <!-- LOGIN LOGIC -->
+  <script type="module">
+    import { sendOTP, verifyOTP } from "./firebase.js";
 
-    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
     const otpInput = document.getElementById("otp");
-    const sendBtn = document.getElementById("sendBtn");
-    const verifyBtn = document.getElementById("verifyBtn");
+    const btn = document.getElementById("actionBtn");
 
-    /* ---------- SEND OTP ---------- */
-    function sendOTP() {
-      const email = emailInput.value.trim();
+    let otpSent = false;
 
-      if (!email || !email.includes("@")) {
-        emailInput.classList.add("invalid");
-        return;
-      }
+    btn.onclick = async () => {
+      // STEP 1: SEND OTP
+      if (!otpSent) {
+        const phone = phoneInput.value.trim();
 
-      sendBtn.innerText = "Sending...";
-      sendBtn.disabled = true;
-
-      fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "send",
-          email: email
-        })
-      })
-      .then(res => res.json())
-      .then(() => {
-        emailInput.classList.add("valid");
-        otpInput.classList.remove("hidden");
-        verifyBtn.classList.remove("hidden");
-        otpInput.focus();
-        sendBtn.innerText = "OTP Sent";
-      })
-      .catch(() => {
-        alert("Failed to send OTP. Try again.");
-        sendBtn.innerText = "Send OTP";
-        sendBtn.disabled = false;
-      });
-    }
-
-    /* ---------- VERIFY OTP ---------- */
-    function verifyOTP() {
-      const email = emailInput.value.trim();
-      const otp = otpInput.value.trim();
-
-      if (otp.length !== 6) {
-        otpInput.classList.add("invalid");
-        return;
-      }
-
-      verifyBtn.innerText = "Verifying...";
-      verifyBtn.disabled = true;
-
-      fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "verify",
-          email: email,
-          otp: otp
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          store.set("user_email", email);
-          window.location.href = "choice.html";
-        } else {
-          alert("Invalid or expired OTP");
-          verifyBtn.innerText = "Verify & Continue";
-          verifyBtn.disabled = false;
+        if (!phone.startsWith("+")) {
+          alert("Enter phone number with country code (e.g. +91...)");
+          return;
         }
-      })
-      .catch(() => {
-        alert("Verification failed");
-        verifyBtn.innerText = "Verify & Continue";
-        verifyBtn.disabled = false;
-      });
-    }
+
+        btn.innerText = "Sending...";
+        btn.disabled = true;
+
+        const success = await sendOTP(phone);
+
+        if (success) {
+          otpSent = true;
+          otpInput.classList.remove("hidden");
+          btn.innerText = "Verify OTP";
+        } else {
+          btn.innerText = "Send OTP";
+        }
+
+        btn.disabled = false;
+        return;
+      }
+
+      // STEP 2: VERIFY OTP
+      const otp = otpInput.value.trim();
+      if (otp.length < 4) {
+        alert("Enter valid OTP");
+        return;
+      }
+
+      btn.innerText = "Verifying...";
+      btn.disabled = true;
+
+      const user = await verifyOTP(otp);
+
+      if (user) {
+        setLoggedIn({
+          phone: user.phoneNumber,
+          uid: user.uid
+        });
+
+        window.location.href = "choice.html";
+      } else {
+        btn.innerText = "Verify OTP";
+        btn.disabled = false;
+      }
+    };
   </script>
 
 </body>
