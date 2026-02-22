@@ -1,52 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>OTP Login</title>
-  <link rel="stylesheet" href="./style.css">
+  <style>
+    body {
+      background:#111;
+      color:#fff;
+      font-family:Arial;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+    .card {
+      background:#222;
+      padding:24px;
+      border-radius:12px;
+      width:320px;
+    }
+    input, button {
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border-radius:6px;
+      border:none;
+    }
+    button {
+      background:gold;
+      font-weight:bold;
+      cursor:pointer;
+    }
+  </style>
 </head>
 <body>
 
 <div class="card">
-  <h2>Verify Mobile</h2>
+  <h3>Verify Mobile</h3>
 
-  <input id="phone" placeholder="10-digit mobile number" maxlength="10">
+  <input id="phone" placeholder="10-digit mobile number" maxlength="10" />
   <button id="sendBtn">Continue</button>
 
-  <input id="otp" placeholder="Enter OTP" style="display:none">
+  <input id="otp" placeholder="Enter OTP" style="display:none" />
   <button id="verifyBtn" style="display:none">Verify OTP</button>
 
-  <div id="recaptcha"></div>
+  <!-- 🔴 REQUIRED -->
+  <div id="recaptcha-container"></div>
 </div>
 
-<!-- IMPORTANT: relative path -->
 <script type="module" src="./firebase.js"></script>
 
 <script>
-const phone = document.getElementById("phone");
-const otp = document.getElementById("otp");
+const phoneInput = document.getElementById("phone");
+const otpInput = document.getElementById("otp");
 const sendBtn = document.getElementById("sendBtn");
 const verifyBtn = document.getElementById("verifyBtn");
 
 sendBtn.onclick = async () => {
-  const number = phone.value.trim();
+  const number = phoneInput.value.trim();
 
   if (!/^[6-9]\d{9}$/.test(number)) {
     alert("Enter valid Indian number");
     return;
   }
 
-  const ok = await window.sendOTP("+91" + number);
-  if (ok) {
-    otp.style.display = "block";
+  const success = await window.sendOTP("+91" + number);
+  if (success) {
+    otpInput.style.display = "block";
     verifyBtn.style.display = "block";
   }
 };
 
 verifyBtn.onclick = async () => {
-  const user = await window.verifyOTP(otp.value.trim());
+  const user = await window.verifyOTP(otpInput.value.trim());
   if (user) {
-    alert("OTP verified successfully");
+    alert("OTP verified successfully ✅");
   }
 };
 </script>
