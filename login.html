@@ -2,57 +2,53 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Secure Login</title>
-  <link rel="stylesheet" href="style.css">
+  <title>OTP Login</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-<div class="card animate-in">
-  <h1>Secure Login</h1>
-  <p class="subtitle">Verify your mobile number</p>
+<div class="card">
+  <h2>Verify Mobile</h2>
 
   <input id="phone" placeholder="10-digit mobile number" maxlength="10">
-  <button id="sendBtn" class="btn-gold">Continue</button>
+  <button id="sendBtn">Continue</button>
 
-  <input id="otp" placeholder="Enter OTP" class="fade">
-  <button id="verifyBtn" class="btn-gold fade">Verify</button>
+  <input id="otp" placeholder="Enter OTP" style="display:none">
+  <button id="verifyBtn" style="display:none">Verify OTP</button>
 
   <div id="recaptcha"></div>
 </div>
 
-<script type="module" src="firebase.js"></script>
+<!-- IMPORTANT: relative path -->
+<script type="module" src="./firebase.js"></script>
 
 <script>
-const phoneInput = document.getElementById("phone");
-const otpInput = document.getElementById("otp");
+const phone = document.getElementById("phone");
+const otp = document.getElementById("otp");
 const sendBtn = document.getElementById("sendBtn");
 const verifyBtn = document.getElementById("verifyBtn");
 
-/* SEND OTP */
-sendBtn.addEventListener("click", async () => {
-  const num = phoneInput.value.trim();
+sendBtn.onclick = async () => {
+  const number = phone.value.trim();
 
-  if (!/^[6-9]\d{9}$/.test(num)) {
+  if (!/^[6-9]\d{9}$/.test(number)) {
     alert("Enter valid Indian number");
     return;
   }
 
-  const ok = await window.sendOTP("+91" + num);
-
+  const ok = await window.sendOTP("+91" + number);
   if (ok) {
-    otpInput.classList.add("show");
-    verifyBtn.classList.add("show");
+    otp.style.display = "block";
+    verifyBtn.style.display = "block";
   }
-});
+};
 
-/* VERIFY OTP */
-verifyBtn.addEventListener("click", async () => {
-  const user = await window.verifyOTP(otpInput.value.trim());
+verifyBtn.onclick = async () => {
+  const user = await window.verifyOTP(otp.value.trim());
   if (user) {
-    localStorage.setItem("user", user.phoneNumber);
-    location.href = "choice.html";
+    alert("OTP verified successfully");
   }
-});
+};
 </script>
 
 </body>
