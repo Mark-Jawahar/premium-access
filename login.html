@@ -1,100 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Secure Access</title>
+  <title>Secure Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body onload="guardPage('login')">
-  <div class="glass-card">
-    <h1>Secure Login</h1>
-    <p class="subtitle">Enter your mobile number to access the portal.</p>
+<body>
 
-    <div id="step-1">
-      <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10">
-      <button class="btn-gold" id="sendBtn">Get Access Code</button>
-    </div>
+<div class="card animate-in">
+  <h1>Secure Login</h1>
+  <p class="subtitle">Verify your mobile number</p>
 
-    <div id="step-2" style="display: none;">
-      <input type="number" id="otp" placeholder="Enter 6-digit OTP">
-      <button class="btn-gold" id="verifyBtn">Verify & Enter</button>
-    </div>
+  <input id="phone" placeholder="10-digit mobile number" maxlength="10">
+  <button id="sendBtn" class="btn-gold">Continue</button>
 
-    <div id="recaptcha-container"></div>
-  </div>
+  <input id="otp" placeholder="Enter OTP" class="fade">
+  <button id="verifyBtn" class="btn-gold fade">Verify</button>
 
-  <script src="core.js"></script>
-  
-  <script type="module">
-    import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "./firebase-config.js";
+  <div id="recaptcha"></div>
+</div>
 
-    let confirmationResult;
+<script type="module" src="firebase.js"></script>
 
-    // 1. Initialize Recaptcha Safely
-    function initRecaptcha() {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'invisible'
-        });
-      }
-    }
+<script>
+const phoneInput = document.getElementById("phone");
+const otpInput = document.getElementById("otp");
+const sendBtn = document.getElementById("sendBtn");
+const verifyBtn = document.getElementById("verifyBtn");
 
-    // 2. Handle Send OTP
-    document.getElementById('sendBtn').addEventListener('click', async () => {
-      const phone = document.getElementById('phone').value.trim();
-      
-      if(phone.length !== 10) {
-        return alert('Please enter a valid 10-digit number');
-      }
+/* SEND OTP */
+sendBtn.addEventListener("click", async () => {
+  const num = phoneInput.value.trim();
 
-      const fullPhone = "+91" + phone;
-      const btn = document.getElementById('sendBtn');
-      btn.innerText = "Sending...";
+  if (!/^[6-9]\d{9}$/.test(num)) {
+    alert("Enter valid Indian number");
+    return;
+  }
 
-      try {
-        initRecaptcha();
-        const appVerifier = window.recaptchaVerifier;
-        
-        // Request OTP from Firebase
-        confirmationResult = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
-        
-        // Hide Step 1, Show Step 2
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'block';
-      } catch (error) {
-        console.error("Firebase Error:", error);
-        alert("Error sending OTP. Check console for details.");
-        btn.innerText = "Get Access Code";
-      }
-    });
+  const ok = await window.sendOTP("+91" + num);
 
-    // 3. Handle Verify OTP
-    document.getElementById('verifyBtn').addEventListener('click', async () => {
-      const otp = document.getElementById('otp').value.trim();
-      const btn = document.getElementById('verifyBtn');
-      
-      if(otp.length < 6) {
-        return alert('Please enter the full 6-digit OTP');
-      }
+  if (ok) {
+    otpInput.classList.add("show");
+    verifyBtn.classList.add("show");
+  }
+});
 
-      btn.innerText = "Verifying...";
+/* VERIFY OTP */
+verifyBtn.addEventListener("click", async () => {
+  const user = await window.verifyOTP(otpInput.value.trim());
+  if (user) {
+    localStorage.setItem("user", user.phoneNumber);
+    location.href = "choice.html";
+  }
+});
+</script>
 
-      try {
-        const result = await confirmationResult.confirm(otp);
-        
-        // Save user session
-        store.set('user', { phone: result.user.phoneNumber });
-        logActivity({ type: "Login", phone: result.user.phoneNumber });
-        
-        // Redirect to choice page
-        window.location.href = 'choice.html';
-      } catch (error) {
-        console.error("Verification Error:", error);
-        alert("Invalid OTP. Please try again.");
-        btn.innerText = "Verify & Enter";
-      }
-    });
-  </script>
 </body>
 </html>
