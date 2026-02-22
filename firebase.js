@@ -1,4 +1,4 @@
-// firebase.js — FINAL FIX (EXPOSED FUNCTIONS)
+// firebase.js — FINAL FIXED VERSION
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
@@ -16,17 +16,14 @@ const firebaseConfig = {
   appId: "1:35609923793:web:0d9f0c7eb7688c8aec35f0"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 auth.languageCode = "en";
 
-let confirmationResult = null;
+let confirmationResult;
 
-/* 🔐 INIT RECAPTCHA */
-window.initRecaptcha = function () {
+/* INIT RECAPTCHA */
+window.initRecaptcha = () => {
   if (!window.recaptchaVerifier) {
     window.recaptchaVerifier = new RecaptchaVerifier(
       auth,
@@ -36,8 +33,8 @@ window.initRecaptcha = function () {
   }
 };
 
-/* 📲 SEND OTP */
-window.sendOTP = async function (phoneNumber) {
+/* SEND OTP */
+window.sendOTP = async (phoneNumber) => {
   try {
     initRecaptcha();
     confirmationResult = await signInWithPhoneNumber(
@@ -54,8 +51,8 @@ window.sendOTP = async function (phoneNumber) {
   }
 };
 
-/* ✅ VERIFY OTP */
-window.verifyOTP = async function (otp) {
+/* VERIFY OTP */
+window.verifyOTP = async (otp) => {
   try {
     const result = await confirmationResult.confirm(otp);
     return result.user;
