@@ -16,27 +16,49 @@
 
   <div class="card">
     <h1>Free Preview</h1>
-    <p class="subtitle">Enjoy a short teaser</p>
+    <p class="subtitle">
+      Enjoy a short teaser before unlocking the full library
+    </p>
 
+    <!-- FREE PREVIEW LINK -->
     <a
       href="https://mega.nz/folder/H14Q0ThK#4B_XDMQyjo-pt-5YThxFAw"
       target="_blank"
+      rel="noopener noreferrer"
       class="item-card"
       style="text-decoration:none;"
-      onclick="event.stopPropagation()"
+      onclick="event.stopPropagation(); previewClicked();"
     >
       <div class="plan-info">
         <div class="plan-title">Teaser Clip</div>
-        <div class="plan-desc">1 minute preview</div>
+        <div class="plan-desc">Approx. 1 minute preview</div>
       </div>
       <div class="price-tag">▶</div>
     </a>
 
-    <button class="btn-gold" onclick="location.href='exclusive.html'">
+    <button
+      class="btn-gold"
+      style="margin-top:18px;"
+      onclick="location.href='exclusive.html'"
+    >
       Unlock Premium
     </button>
+
+    <p class="footer-note">
+      Premium unlocks full-length videos & exclusive updates
+    </p>
   </div>
 
   <script src="core.js"></script>
+  <script>
+    // Prevent double taps & give feedback
+    let previewLocked = false;
+    function previewClicked() {
+      if (previewLocked) return;
+      previewLocked = true;
+      setTimeout(() => previewLocked = false, 1500);
+    }
+  </script>
+
 </body>
 </html>
