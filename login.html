@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Secure Access</title>
 
-  <!-- Premium UI -->
+  <!-- SEO + PERFORMANCE -->
+  <meta name="description" content="Secure premium access. No OTP. Instant unlock.">
+  <meta name="robots" content="index, follow">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -13,83 +16,49 @@
 
   <div class="card">
     <h1>Secure Access</h1>
-    <p class="subtitle">
-      Continue to your private experience
-    </p>
+    <p class="subtitle">Instant entry · No OTP · No spam</p>
 
-    <!-- EMAIL -->
-    <input
-      type="email"
-      id="email"
-      placeholder="Email (optional)"
-      autocomplete="email"
-    />
+    <input id="email" type="email" placeholder="Email (optional)">
+    <input id="mobile" type="tel" placeholder="Mobile (optional)">
 
-    <!-- MOBILE -->
-    <input
-      type="tel"
-      id="mobile"
-      placeholder="Mobile number (optional)"
-      inputmode="numeric"
-    />
-
-    <!-- CTA -->
     <button class="btn-gold" onclick="continueAccess()">
       Continue Securely
     </button>
 
-    <p class="footer-note" id="status">
-      No OTP • No spam • Instant access
-    </p>
+    <p class="footer-note" id="status">Your data stays private</p>
   </div>
 
-  <!-- CORE -->
   <script src="core.js"></script>
-
   <script>
-    const SHEET_API =
-      "https://script.google.com/macros/s/AKfycbyxisby6sGpVaV4RrBzdQYKpbwgVskgZHWCTITbu0xuQSj8kmQxbeQBglVG3320LjCs3w/exec";
+    const SHEET_API = "PASTE_GOOGLE_SCRIPT_URL_HERE";
 
     function continueAccess() {
-      const email = document.getElementById("email").value.trim();
-      const mobile = document.getElementById("mobile").value.trim();
+      const emailVal = email.value.trim();
+      const mobileVal = mobile.value.trim();
 
-      if (!email && !mobile) {
-        softStatus("Enter email or mobile to continue");
+      if (!emailVal && !mobileVal) {
+        status.innerText = "Enter email or mobile to continue";
         return;
       }
 
-      // Start session immediately (no OTP)
-      const identity = email || mobile;
-      onLoginSuccess(identity);
+      onLoginSuccess(emailVal || mobileVal);
 
-      // Silent Google Sheet logging
-fetch(SHEET_API, {
-  method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email,
-    mobile,
-    page: "login",
-    time: new Date().toLocaleString(),
-    userAgent: navigator.userAgent
-  })
-});
-    function softStatus(msg) {
-      document.getElementById("status").innerText = msg;
+      fetch(SHEET_API, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailVal,
+          mobile: mobileVal,
+          page: "login",
+          time: new Date().toLocaleString(),
+          userAgent: navigator.userAgent
+        })
+      });
+
+      status.innerText = "Redirecting…";
     }
-  <script>
-  // iOS tap haptic illusion
-  document.querySelectorAll("button, .item-card").forEach(el => {
-    el.addEventListener("touchstart", () => {
-      el.style.transform = "scale(0.96)";
-    });
-    el.addEventListener("touchend", () => {
-      el.style.transform = "";
-    });
-  });
-</script>
+  </script>
 
 </body>
 </html>
