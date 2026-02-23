@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Free Preview</title>
+
+  <!-- SEO + PERFORMANCE -->
+  <meta name="description" content="Free preview of premium content.">
+  <meta name="robots" content="index, follow">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -11,31 +16,24 @@
 
   <div class="card">
     <h1>Free Preview</h1>
-    <p class="subtitle">
-      Enjoy a short preview. Unlock premium to access the full library.
-    </p>
+    <p class="subtitle">Enjoy a short teaser</p>
 
-    <div class="list-container">
+    <a
+      href="https://drive.google.com/file/d/YOUR_FILE_ID/view"
+      target="_blank"
+      class="item-card"
+      style="text-decoration:none;"
+      onclick="event.stopPropagation()"
+    >
+      <div class="plan-info">
+        <div class="plan-title">Teaser Clip</div>
+        <div class="plan-desc">1 minute preview</div>
+      </div>
+      <div class="price-tag">▶</div>
+    </a>
 
-      <!-- IMPORTANT: use real link -->
-      <a
-        href="https://drive.google.com/file/d/YOUR_FILE_ID/view"
-        target="_blank"
-        class="item-card"
-        onclick="event.stopPropagation()"
-        style="text-decoration:none;"
-      >
-        <div>
-          <div class="plan-title">Teaser Clip</div>
-          <div class="plan-desc">1 min preview</div>
-        </div>
-        <div class="price-tag">▶</div>
-      </a>
-
-    </div>
-
-    <button class="btn-gold" onclick="smoothNav('exclusive.html')">
-      Unlock Full Access
+    <button class="btn-gold" onclick="location.href='exclusive.html'">
+      Unlock Premium
     </button>
   </div>
 
