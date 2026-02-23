@@ -4,33 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Successful</title>
+
+  <!-- SEO + PERFORMANCE -->
+  <meta name="description" content="Payment successful. Premium access unlocked.">
+  <meta name="robots" content="noindex, nofollow">
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body onload="guardPage('thankyou'); loadReceipt()">
-  <div class="glass-card">
-    <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-    <h1>Payment Verified</h1>
-    <p class="subtitle">Your premium access is now active.</p>
 
-    <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 16px; margin-bottom: 24px; text-align: left; font-size: 14px;">
-      <p style="color: var(--text-muted); margin-bottom: 8px;">Plan: <span id="r-plan" style="color:#fff; float:right;">-</span></p>
-      <p style="color: var(--text-muted); margin-bottom: 8px;">Amount: <span id="r-amt" style="color:#fff; float:right;">-</span></p>
-      <p style="color: var(--text-muted);">Payment ID: <br><span id="r-id" style="color:#fff; font-size: 12px; margin-top: 4px; display: block;">-</span></p>
-    </div>
+  <div class="card">
+    <div style="font-size:48px;">✅</div>
+    <h1>Payment Successful</h1>
+    <p class="subtitle">Your premium access is active</p>
 
-    <button class="btn-gold" onclick="window.location.href='YOUR_DELIVERY_LINK'">Access Premium Videos Now</button>
+    <div class="footer-note" id="receipt"></div>
+
+    <button class="btn-gold" onclick="location.href='YOUR_PREMIUM_LINK'">
+      Access Premium Content
+    </button>
   </div>
 
   <script src="core.js"></script>
   <script>
     function loadReceipt() {
-      const data = store.get('last_payment');
-      if(data) {
-        document.getElementById('r-plan').innerText = data.plan;
-        document.getElementById('r-amt').innerText = "₹" + data.amount;
-        document.getElementById('r-id').innerText = data.payment_id;
+      const r = store.get("last_payment");
+      if (r) {
+        receipt.innerText =
+          `Plan: ${r.plan} | ₹${r.amount}\nPayment ID: ${r.payment_id}`;
       }
     }
   </script>
+
 </body>
 </html>
