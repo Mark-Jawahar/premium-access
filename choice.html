@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Access</title>
 
-  <!-- Premium UI -->
+  <!-- SEO + PERFORMANCE -->
+  <meta name="description" content="Choose free preview or unlock premium access.">
+  <meta name="robots" content="index, follow">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -13,64 +16,28 @@
 
   <div class="card">
     <h1>Choose Access</h1>
-    <p class="subtitle">
-      Select how you want to continue
-    </p>
+    <p class="subtitle">Select how you want to continue</p>
 
     <div class="list-container">
-
-      <!-- FREE OPTION -->
-      <div class="item-card" onclick="selectAccess('guest', 'free.html', this)">
+      <div class="item-card" onclick="location.href='free.html'">
         <div class="plan-info">
-          <div class="plan-title">Guest Pass</div>
-          <div class="plan-desc">
-            Preview limited teaser clips
-          </div>
+          <div class="plan-title">Free Preview</div>
+          <div class="plan-desc">Limited teaser access</div>
         </div>
         <div class="price-tag">Free</div>
       </div>
 
-      <!-- PREMIUM OPTION -->
-      <div class="item-card premium" onclick="selectAccess('premium', 'exclusive.html', this)">
-        <span class="badge">RECOMMENDED</span>
+      <div class="item-card premium" onclick="location.href='exclusive.html'">
+        <span class="badge">BEST</span>
         <div class="plan-info">
           <div class="plan-title">VIP Premium</div>
-          <div class="plan-desc">
-            Unlock the full private library
-          </div>
+          <div class="plan-desc">Full private library</div>
         </div>
         <div class="price-tag">👑</div>
       </div>
-
     </div>
-
-    <p class="footer-note">
-      You can upgrade anytime
-    </p>
   </div>
 
-  <!-- CORE -->
   <script src="core.js"></script>
-
-  <script>
-    let accessLocked = false;
-
-    function selectAccess(level, target, el) {
-      if (accessLocked) return;
-      accessLocked = true;
-
-      // Visual tap feedback (iOS-style)
-      el.style.transform = "scale(0.97)";
-      el.style.opacity = "0.9";
-
-      // Store intent (not payment)
-      store.set("access_level", level);
-
-      setTimeout(() => {
-        window.location.href = target;
-      }, 180);
-    }
-  </script>
-
 </body>
 </html>
