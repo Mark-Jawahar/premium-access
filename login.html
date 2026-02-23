@@ -82,7 +82,17 @@
     function softStatus(msg) {
       document.getElementById("status").innerText = msg;
     }
-  </script>
+  <script>
+  // iOS tap haptic illusion
+  document.querySelectorAll("button, .item-card").forEach(el => {
+    el.addEventListener("touchstart", () => {
+      el.style.transform = "scale(0.96)";
+    });
+    el.addEventListener("touchend", () => {
+      el.style.transform = "";
+    });
+  });
+</script>
 
 </body>
 </html>
