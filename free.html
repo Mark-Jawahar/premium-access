@@ -12,44 +12,30 @@
   <div class="card">
     <h1>Free Preview</h1>
     <p class="subtitle">
-      Enjoy a short preview. Unlock premium to access the full private library.
+      Enjoy a short preview. Unlock premium to access the full library.
     </p>
 
-    <!-- PREVIEW LIST -->
-    <div class="list-container" style="margin-bottom:20px;">
+    <div class="list-container">
 
+      <!-- IMPORTANT: use real link -->
       <a
-        href="YOUR_PREVIEW_LINK"
+        href="https://drive.google.com/file/d/YOUR_FILE_ID/view"
         target="_blank"
         class="item-card"
+        onclick="event.stopPropagation()"
         style="text-decoration:none;"
       >
-        <div class="plan-info">
-          <div class="plan-title">Teaser Clip 01</div>
-          <div class="plan-desc">Duration: 1 min 45 sec</div>
+        <div>
+          <div class="plan-title">Teaser Clip</div>
+          <div class="plan-desc">1 min preview</div>
         </div>
         <div class="price-tag">▶</div>
       </a>
 
     </div>
 
-    <!-- VALUE FRAMING -->
-    <div class="footer-note" style="margin-bottom:20px;">
-      🔒 Premium members get full-length videos, exclusive updates, and priority access.
-    </div>
-
-    <!-- CTA -->
-    <button class="btn-gold" onclick="location.href='exclusive.html'">
+    <button class="btn-gold" onclick="smoothNav('exclusive.html')">
       Unlock Full Access
-    </button>
-
-    <!-- SOFT BACK -->
-    <button
-      class="btn-ghost"
-      style="margin-top:12px;"
-      onclick="location.href='choice.html'"
-    >
-      Back
     </button>
   </div>
 
