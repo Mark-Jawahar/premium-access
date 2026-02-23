@@ -64,21 +64,18 @@
       onLoginSuccess(identity);
 
       // Silent Google Sheet logging
-      fetch(SHEET_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email || "-",
-          mobile: mobile || "-",
-          page: "login",
-          time: new Date().toLocaleString(),
-          userAgent: navigator.userAgent
-        })
-      }).catch(() => {});
-
-      softStatus("Redirecting…");
-    }
-
+fetch(SHEET_API, {
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email,
+    mobile,
+    page: "login",
+    time: new Date().toLocaleString(),
+    userAgent: navigator.userAgent
+  })
+});
     function softStatus(msg) {
       document.getElementById("status").innerText = msg;
     }
