@@ -5,23 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Age Verification</title>
 
-  <!-- Premium UI -->
+  <!-- SEO + PERFORMANCE -->
+  <meta name="description" content="Age verification required to access premium content.">
+  <meta name="robots" content="noindex, nofollow">
+
   <link rel="stylesheet" href="style.css" />
 </head>
-<meta name="description" content="Exclusive premium content. Secure access. Instant unlock." />
-<meta name="robots" content="index, follow" />
-<link rel="preconnect" href="https://checkout.razorpay.com">
-<link rel="dns-prefetch" href="https://checkout.razorpay.com">
 
 <body onload="guardPage('age')">
 
   <div class="card">
-    <div style="font-size:48px; margin-bottom:14px;">🔞</div>
-
+    <div style="font-size:48px;margin-bottom:14px;">🔞</div>
     <h1>Age Verification</h1>
     <p class="subtitle">
-      This website contains restricted premium content.<br />
-      You must confirm that you are <b>18 years or older</b>.
+      You must be <b>18 years or older</b> to continue.
     </p>
 
     <button class="btn-gold" onclick="confirmAge(true)">
@@ -31,30 +28,16 @@
     <button class="btn-ghost" onclick="confirmAge(false)">
       Exit
     </button>
-
-    <p class="footer-note">
-      By continuing, you confirm that you meet the legal age requirement.
-    </p>
   </div>
 
-  <!-- CORE -->
   <script src="core.js"></script>
-
   <script>
-    /* ===============================
-       AGE CONFIRMATION
-    ================================ */
-    function confirmAge(isAdult) {
-      if (isAdult) {
+    function confirmAge(ok) {
+      if (ok) {
         store.set("age_verified", true);
-
-        // Prevent back navigation only AFTER confirmation
-        history.replaceState(null, null, location.href);
-
-        window.location.href = "login.html";
+        location.href = "login.html";
       } else {
-        // Hard exit for compliance
-        window.location.href = "https://www.google.com";
+        location.href = "https://www.google.com";
       }
     }
   </script>
