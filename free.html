@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- ===== BASIC ===== -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Free Preview</title>
 
-  <!-- SEO + PERFORMANCE -->
-  <meta name="description" content="Free preview of premium content.">
-  <meta name="robots" content="index, follow">
+  <!-- ===== SEO ===== -->
+  <meta name="description" content="Free preview of premium content. Unlock exclusive videos instantly." />
+  <meta name="robots" content="index, follow" />
 
+  <!-- ===== STYLES ===== -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -17,44 +19,50 @@
   <div class="card">
     <h1>Free Preview</h1>
     <p class="subtitle">
-      Enjoy a short VIDEOS before unlocking Premium
+      Enjoy short previews before unlocking Premium
     </p>
 
-    <!-- FREE PREVIEW LINK 1 -->
-    <a
-      href="https://mega.nz/file/C8YT2boa#ziaShvKGVEd5Ml_WBK8taBstKQdW98SLrqMgRxN-h7w"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="item-card"
-      style="text-decoration:none;"
-      onclick="event.stopPropagation(); previewClicked();"
-      >
-      <div class="plan-info">
-        <div class="plan-title">Short Video</div>
-        <div class="plan-desc">Preview</div>
-      </div>
-      <div class="price-tag">▶</div>
-    </a>
-        <!-- FREE PREVIEW LINK  -->
-    <a
-      href="https://mega.nz/file/7oxiwKKC#Sj7t-17Eyw3ge8A-FNSfNzPnBwAbpofcdyBW2vCd0ok"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="item-card"
-      style="text-decoration:none;"
-      onclick="event.stopPropagation(); previewClicked();"
-    >
-      <div class="plan-info">
-        <div class="plan-title">Short Video</div>
-        <div class="plan-desc">Preview</div>
-      </div>
-      <div class="price-tag">▶</div>
-    </a>
+    <div class="list-container">
 
+      <!-- ===== FREE PREVIEW 1 ===== -->
+      <a
+        href="https://mega.nz/file/C8YT2boa#ziaShvKGVEd5Ml_WBK8taBstKQdW98SLrqMgRxN-h7w"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="item-card"
+        style="text-decoration:none;"
+        onclick="event.stopPropagation(); logPreview('Video 1');"
+      >
+        <div class="plan-info">
+          <div class="plan-title">Short Video 1</div>
+          <div class="plan-desc">Free Preview</div>
+        </div>
+        <div class="price-tag">▶</div>
+      </a>
+
+      <!-- ===== FREE PREVIEW 2 ===== -->
+      <a
+        href="https://mega.nz/file/7oxiwKKC#Sj7t-17Eyw3ge8A-FNSfNzPnBwAbpofcdyBW2vCd0ok"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="item-card"
+        style="text-decoration:none;"
+        onclick="event.stopPropagation(); logPreview('Video 2');"
+      >
+        <div class="plan-info">
+          <div class="plan-title">Short Video 2</div>
+          <div class="plan-desc">Free Preview</div>
+        </div>
+        <div class="price-tag">▶</div>
+      </a>
+
+    </div>
+
+    <!-- ===== CTA ===== -->
     <button
       class="btn-gold"
-      style="margin-top:18px;"
-      onclick="location.href='exclusive.html'"
+      style="margin-top:20px;"
+      onclick="smoothNav('exclusive.html')"
     >
       Unlock Premium
     </button>
@@ -64,14 +72,33 @@
     </p>
   </div>
 
+  <!-- ===== CORE ===== -->
   <script src="core.js"></script>
+
+  <!-- ===== ANALYTICS + SAFETY ===== -->
   <script>
-    // Prevent double taps & give feedback
+    const SHEET_API = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
     let previewLocked = false;
-    function previewClicked() {
+
+    function logPreview(label) {
       if (previewLocked) return;
       previewLocked = true;
-      setTimeout(() => previewLocked = false, 1500);
+
+      // Silent analytics (does NOT block video)
+      fetch(SHEET_API, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page: "free",
+          action: "preview_click",
+          label: label,
+          time: new Date().toLocaleString(),
+          userAgent: navigator.userAgent
+        })
+      }).catch(() => {});
+
+      setTimeout(() => previewLocked = false, 1200);
     }
   </script>
 
