@@ -3,149 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Secure Login</title>
+  <title>Secure Access</title>
 
   <!-- Premium UI -->
   <link rel="stylesheet" href="style.css" />
-
 </head>
+
 <body onload="guardPage('login')">
 
   <div class="card">
     <h1>Secure Access</h1>
-    <p class="subtitle">Enter your email to receive a one-time code</p>
+    <p class="subtitle">
+      Continue to your private experience
+    </p>
 
     <!-- EMAIL -->
     <input
       type="email"
       id="email"
-      placeholder="you@example.com"
+      placeholder="Email (optional)"
       autocomplete="email"
     />
 
-    <!-- SEND OTP -->
-    <button class="btn-gold" id="sendBtn" onclick="sendOTP()">
-      Send OTP
-    </button>
-
-    <!-- OTP -->
+    <!-- MOBILE -->
     <input
-      type="text"
-      id="otp"
-      class="hidden"
-      placeholder="Enter 6-digit OTP"
+      type="tel"
+      id="mobile"
+      placeholder="Mobile number (optional)"
       inputmode="numeric"
     />
 
-    <!-- VERIFY -->
-    <button
-      class="btn-gold hidden"
-      id="verifyBtn"
-      onclick="verifyOTP()"
-    >
-      Verify & Continue
+    <!-- CTA -->
+    <button class="btn-gold" onclick="continueAccess()">
+      Continue Securely
     </button>
 
-    <p class="footer-note" id="status"></p>
+    <p class="footer-note" id="status">
+      No OTP • No spam • Instant access
+    </p>
   </div>
 
-  <!-- CORE LOGIC -->
+  <!-- CORE -->
   <script src="core.js"></script>
 
   <script>
-    /* ===============================
-       CONFIG
-    ================================ */
-    const API_URL = "https://script.google.com/macros/s/AKfycbyDLsfNVKNDwOTPgVpOkUpXlQd5HPwIZ3g71IAt5fjfGWUWKHXg_5c2f2lrJvlvnrig5g/exec";
-    let cooldown = false;
+    const SHEET_API =
+      "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
 
-    const emailInput = document.getElementById("email");
-    const otpInput = document.getElementById("otp");
-    const sendBtn = document.getElementById("sendBtn");
-    const verifyBtn = document.getElementById("verifyBtn");
-    const statusText = document.getElementById("status");
+    function continueAccess() {
+      const email = document.getElementById("email").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
 
-    /* ===============================
-       SEND OTP
-    ================================ */
-    function sendOTP() {
-      const email = emailInput.value.trim().toLowerCase();
-
-      if (!email || !email.includes("@")) {
-        status("Please enter a valid email address");
+      if (!email && !mobile) {
+        softStatus("Enter email or mobile to continue");
         return;
       }
 
-      if (cooldown) return;
+      // Start session immediately (no OTP)
+      const identity = email || mobile;
+      onLoginSuccess(identity);
 
-      cooldown = true;
-      sendBtn.disabled = true;
-      status("Sending OTP…");
-
-      fetch(API_URL, {
+      // Silent Google Sheet logging
+      fetch(SHEET_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "send",
-          email: email
+          email: email || "-",
+          mobile: mobile || "-",
+          page: "login",
+          time: new Date().toLocaleString(),
+          userAgent: navigator.userAgent
         })
-      })
-        .then(r => r.json())
-        .then(res => {
-          if (res.success) {
-            otpInput.classList.remove("hidden");
-            verifyBtn.classList.remove("hidden");
-            status("OTP sent. Check your inbox.");
-          } else {
-            status(res.message || "Failed to send OTP");
-          }
-        })
-        .catch(() => status("Network error. Try again."))
-        .finally(() => {
-          setTimeout(() => {
-            cooldown = false;
-            sendBtn.disabled = false;
-          }, 30000); // 30s resend lock
-        });
+      }).catch(() => {});
+
+      softStatus("Redirecting…");
     }
 
-    /* ===============================
-       VERIFY OTP
-    ================================ */
-    function verifyOTP() {
-      const email = emailInput.value.trim().toLowerCase();
-      const otp = otpInput.value.trim();
-
-      if (otp.length < 4) {
-        status("Enter the OTP you received");
-        return;
-      }
-
-      status("Verifying…");
-
-      fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "verify",
-          email: email,
-          otp: otp
-        })
-      })
-        .then(r => r.json())
-        .then(res => {
-          if (res.success) {
-            store.set("user_email", email);
-            window.location.href = "choice.html";
-          } else {
-            status("Invalid or expired OTP");
-          }
-        })
-        .catch(() => status("Verification failed"));
-    }
-
-    function status(msg) {
-      statusText.innerText = msg;
+    function softStatus(msg) {
+      document.getElementById("status").innerText = msg;
     }
   </script>
 
