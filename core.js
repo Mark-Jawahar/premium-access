@@ -49,24 +49,44 @@ function onLoginSuccess(identity) {
 
 /* ---------- PAYMENT ---------- */
 function startPayment(plan, amount) {
+  if (typeof Razorpay === "undefined") {
+    alert("Payment system failed to load.");
+    return;
+  }
+
   const options = {
     key: "YOUR_RAZORPAY_KEY",
     amount: amount * 100,
     currency: "INR",
     name: "Premium Access",
     description: plan,
-    handler(res) {
-      store.set("last_payment", {
-        plan, amount,
-        payment_id: res.razorpay_payment_id,
+
+    handler: function (response) {
+      const receipt = {
+        plan,
+        amount,
+        payment_id: response.razorpay_payment_id,
         time: Date.now()
-      });
+      };
+
+      store.set("last_payment", receipt);
       store.set("access_level", "premium");
-      smoothNav("thankyou.html");
+
+      // SAFE redirect AFTER payment
+      window.location.href = "thankyou.html";
     },
+
+    modal: {
+      ondismiss: function () {
+        // user closed payment – do nothing
+      }
+    },
+
     theme: { color: "#c9a24d" }
   };
-  new Razorpay(options).open();
+
+  const rzp = new Razorpay(options);
+  rzp.open();
 }
 
 /* ---------- SMOOTH NAV ---------- */
