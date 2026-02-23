@@ -55,7 +55,7 @@ function startPayment(plan, amount) {
   }
 
   const options = {
-    key: "YOUR_RAZORPAY_KEY",
+    key: "rzp_live_SJVTMSnHCF8kO8",
     amount: amount * 100,
     currency: "INR",
     name: "Premium Access",
